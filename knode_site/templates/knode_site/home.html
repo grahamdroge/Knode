@@ -1,0 +1,169 @@
+{% load static %} 
+{% load bootstrap4 %}
+{% bootstrap_css %}
+{% bootstrap_javascript jquery='full' %}
+
+<!DOCTYPE html> 
+<html>
+	<head>
+
+		<link rel="stylesheet" type="text/css" href="{% static 'knode_site/home.css' %}">
+		<!-- <link rel="stylesheet" href="http://code.jquery.com/ui/1.8.18/themes/base/jquery-ui.css" type="text/css" media="all"/>
+  		<link rel="stylesheet" type="text/css" href="{% static 'boots/css/bootstrap.min.css' %}">
+		<link rel="stylesheet" type="text/css" href="{% static 'vibe/cssfiles/home.css' %}">
+		<link href="https://fonts.googleapis.com/css?family=Baloo+Thambi" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet"> -->
+
+	</head>
+
+	<div class="wrapper" id="{{ user.username }}">
+	<body>
+		<div class="navbar navbar-inverse navbar-fixed-top" role="navigation" style="height: 53px;">
+				<div class="navbar-header">
+					<div class="navbar-brand" style="font-family: 'Baloo Thambi', sans-serif; font-size: 38px; cursor: pointer;">        KN <img src="{% static 'knode_site/media/image/icons/knode.png' %}" class="knode-logo" style="display: inline; width: 38px; height: 38px; border: solid; border-width: 2px; padding: 2px; border-radius: 100%; top: -3px; position: relative;"> DE</div>
+
+
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+						<span class="sr-only">Toggle Navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					
+					<ul class="navbar navbar-nav navbar-left">
+
+						<li>
+							<form method="POST" id="search" role="search" class="navbar-form navbar-left">
+							{% csrf_token %}
+							<div class="form-group">
+								<input name="search-user" id="autocomplete-search" class="form-control" placeholder="Search...  ">
+								<button type="submit" class="btn btn-default" id="search-button"><span class="glyphicon glyphicon-search"></span></button>
+								<div id="search-user">
+								
+								</div>
+							</div>	
+							</form>	
+						</li>
+
+						<li class="dropdown">
+							<div class="dropdown" style="margin-top: 7px;">
+
+					    		<ul class="dropdown-menu">
+					    		
+						              <li class="dropdown-submenu" style="text-align: center;">
+						              	<a href="#" class="test" style="text-decoration: none; color: black;">Section</a>
+						              		<ul class="dropdown-menu">	
+										
+						              		</ul>
+						              </li>
+						              <form method="POST">
+						              {% csrf_token %}
+						              	<li class="filter-drop-feed"><button type="submit" name="feed-filter" value="tool" class="filter-get">tool</button></li>
+						              </form>
+						              <form method="POST">
+						              {% csrf_token %}
+						              	<li class="filter-drop-feed"><button type="submit" name="feed-filter" value="post" class="filter-get">post</button></li>
+						              </form>
+						              <form method="POST">
+						              {% csrf_token %}
+						              	<li class="filter-drop-feed"><button type="submit" name="feed-filter" value="none" class="filter-get">none</button></li>
+
+						        </form>
+					            </ul>
+					        </div>
+						</li>
+
+					</ul>
+					
+				</div>
+				<div class="navbar-collapse collapse">
+					<ul class="nav navbar-nav navbar-right">
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" style="position: relative; top: -2px;"></a>
+							<ul class="dropdown-menu">
+
+							</ul>
+						</li>
+						<li>
+							<a href="{% url 'home' %}" style="margin-bottom: 0;"></a>
+						</li>
+
+						<li>
+							<a href="#" style="margin-bottom: 0;"></a>
+						</li>
+
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown"></a>
+							<ul class="dropdown-menu">
+								<li><a href="#" class="dropdown-toggle" style="font-family: 'Comic Sans MS'; font-size: 18px;">Edit Profile</a></li>
+								<li><a href="#" class="dropdown-toggle" style="font-family: 'Comic Sans MS'; font-size: 18px;">Logout</a></li>
+							</ul>
+						</li>
+
+						
+
+					</ul>
+				</div>
+		</div>
+		
+
+	<div class="user-items">
+
+		<div style="width: 100%; height: 6%; position: absolute; top: 1%; margin-left: 2px;">
+
+			<li class="dropdown target_filt type">
+				<a href="#" id="type" class="dropdown-toggle" data-toggle="dropdown" style="color: black; font-size: 18px; position: absolute; width: 100%; height: 100%; margin-top: 5px; text-decoration: none; font-family: 'Baloo Thambi', sans-serif; text-align: center;">Trending</a>
+
+				<ul class="dropdown-menu" style="width: 100%;">
+					<li class="filter-drop"><button type="button" class="choice">Recommended</button></li>
+					<li class="filter-drop"><button type="button" class="choice">Trending</button></li>
+					<li class="filter-drop"><button type="button" class="choice">Top</button></li>
+					<li class="filter-drop"><button type="button" class="choice">Near Me</button></li>
+				</ul>
+
+			</li>
+
+			<li class="dropdown target_filt post-gear">
+				<a href="#" id="post-gear" class="dropdown-toggle" data-toggle="dropdown" style="color: black; font-size: 18px; position: absolute; width: 100%; height: 100%; margin-top: 5px; text-decoration: none; font-family: 'Baloo Thambi', sans-serif; text-align: center;">Post</a>
+
+				<ul class="dropdown-menu" style="width: 100%; white-space: nowrap;">
+					<li class="filter-drop"><button type="button" class="choice">Post</button></li>
+					<li class="filter-drop"><button type="button" class="choice">Gear</button></li>
+				</ul>
+			</li>
+
+
+			<li class="dropdown target_filt" style="display: inline-block; width: 39%; height: 90%; border: solid; border-width: 1px; border-radius: 10px; border-color: black;box-shadow: 0px 0px 7px #000; background-color: rgb(220,220,220);">
+
+				<a href="#" id="target_section" class="dropdown-toggle" data-toggle="dropdown"> Technology</a>
+
+				<ul class="dropdown-menu" style="height: 170px; overflow-y: scroll;">
+
+				</ul>
+			</li>
+
+			<li style="width: 9.8%; height: 90%; border: solid; border-width: 1px; border-color: black; border-radius: 10px; display: inline-block;box-shadow: 0px 0px 7px #000;background-color: rgb(220,220,220);" id="target">
+				<!-- <img src="{% static 'vibe/media/image/icons/target.png' %}" style="width: 28px; height: 28px; position: absolute; margin: 3px 3px 3px 5px;"> -->
+			</li>
+
+			
+		</div>
+		<div class="top_post_instances">
+
+		</div>
+
+	</div>
+
+	<!-- <div class="content-right" id="content-right">
+	
+		
+	</div> -->
+
+<!-- FEED -->
+		<div class="main-feed" id="feed">
+			
+		</div>
+<!-- END FEED -->
+	</div>
+
+</html>
