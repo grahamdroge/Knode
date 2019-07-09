@@ -9,9 +9,9 @@
     <h1>Login Page</h1>
     {% if user.is_authenticated %}
       Hi {{ user.username }}!
-      <a href="{% url 'logout_user' %}">logout</a>
+      <a href="{% url 'logout' %}">logout</a>
     {% else %}
-      <a href="{% url 'login_user' %}">login</a>
+      <a href="{% url 'login' %}">login</a>
     {% endif %}
   </header>
   <hr>
