@@ -1,0 +1,157 @@
+{% load static %}
+
+{% for instance in stream %}
+
+{% if post_feed %}
+
+	{% if instance.verb == 'posted-post' %}
+		<div class="feed-instance">
+			<img style="width: 60px; height: 60px; border-radius: 20%; margin-left: 13px; margin-top: 10px;" src="media/{{ instance.actor.userprofile.image }}">
+			<div class="action_object"><a href="{% url 'subtopic_guest' username=instance.actor.username topic=instance.target.section subtopic=instance.action_object.sub_section %}">{{ instance.action_object }}</a> -- <span style="font-size: .75em;">{{ instance.action_object.sub_section }}</span></div>
+			<div class="timesince">{{ instance.timesince }}</div>
+			<div class="actor"><a href="{% url 'userprofile' username=instance.actor %}">{{ instance.actor.first_name }} {{ instance.actor.last_name }}</a></div>
+			<img class="feed-icon-large" src="media/image/icons/{{ instance.target }}-icon.png">
+			<img style="width: 35px; height: 35px; margin-top: 18px; margin-right: 0px; margin-left: 7px;" src="media/image/icons/post-outline.png">
+			{% if instance.action_object.post_image %}
+				<div class="action_object_content_image"><a href="#image{{ forloop.counter }}" data-toggle='modal' style="outline: none;"><img src="{{ instance.action_object.post_image.url }}" class="content_image"></a></div>
+
+				<div class="modal fade" id="image{{ forloop.counter }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+						<div class="modal-dialog modal-lg" role="document">
+							<div class="modal-content">
+  							<div class="modal-body">
+    							<img src="{{ instance.action_object.post_image.url }}" style="width: 100%; height: 600px;">
+  							</div>  			
+						</div>
+						</div>
+				</div>
+
+				<div class="action_object_content_post">{{ instance.action_object.post_content }}</div>
+			{% elif instance.action_object.post_video %}
+				<div class="youtube-player" data-id="{{ instance.action_object.post_video }}"></div>
+			{% else %}
+				<div class="action_object_content">{{ instance.action_object.post_content }}</div>	
+			{% endif %}
+			<div class="interact" >
+				
+			</div>
+			
+		</div>
+
+	{% endif %}
+
+{% elif tool_feed %}
+
+	{% if instance.verb == 'posted-tool' %}
+		<div class="feed-instance">
+			<img style="width: 60px; height: 60px; border-radius: 20%; margin-left: 13px; margin-top: 10px;" src="media/{{ instance.actor.userprofile.image }}">
+			<div class="action_object"><a href="{% url 'subtopic_guest' username=instance.actor.username topic=instance.target.section subtopic=instance.action_object.sub_section %}">{{ instance.action_object }}</a> -- <span style="font-size: .75em;">{{ instance.action_object.sub_section }}</span></div>
+			<div class="timesince">{{ instance.timesince }}</div>
+			<div class="actor"><a href="{% url 'userprofile' username=instance.actor %}">{{ instance.actor.first_name }} {{ instance.actor.last_name }}</a></div>
+			<img class="feed-icon-large" src="media/image/icons/{{ instance.target }}-icon.png">
+			<img style="width: 31px; height: 31px; margin-top: -60px; margin-left: 0px; margin-top: 18px; margin-right: 0px; margin-left: 7px;" src="media/image/icons/tool-outline.png">
+		</div>
+		<div class="interact">
+				
+		</div>
+	{% endif %}
+
+{% elif section_feed %}
+
+	{% if instance.target.section == section_feed %}
+
+		{% if instance.verb == 'posted-tool' %}
+		<div class="feed-instance">
+			<img style="width: 60px; height: 60px; border-radius: 20%; margin-left: 13px; margin-top: 10px;" src="media/{{ instance.actor.userprofile.image }}">
+			<div class="action_object"><a href="{% url 'subtopic_guest' username=instance.actor.username topic=instance.target.section subtopic=instance.action_object.sub_section %}">{{ instance.action_object }}</a> -- <span style="font-size: .75em;">{{ instance.action_object.sub_section }}</span></div>
+			<div class="timesince">{{ instance.timesince }}</div>
+			<div class="actor"><a href="{% url 'userprofile' username=instance.actor %}">{{ instance.actor.first_name }} {{ instance.actor.last_name }}</a></div>
+			<img class="feed-icon-large" src="media/image/icons/{{ instance.target }}-icon.png">
+			<img style="width: 31px; height: 31px; margin-top: -60px; margin-left: 0px; margin-top: 18px; margin-right: 0px; margin-left: 7px;" src="media/image/icons/tool-outline.png">
+			<div class="interact" >
+				
+			</div>
+		</div>
+		{% elif instance.verb == 'posted-post' %}
+			<div class="feed-instance">
+				<img style="width: 60px; height: 60px; border-radius: 20%; margin-left: 13px; margin-top: 10px;" src="media/{{ instance.actor.userprofile.image }}">
+				<div class="action_object"><a href="{% url 'subtopic_guest' username=instance.actor.username topic=instance.target.section subtopic=instance.action_object.sub_section %}">{{ instance.action_object }}</a> -- <span style="font-size: .75em;">{{ instance.action_object.sub_section }}</span></div>
+				<div class="timesince">{{ instance.timesince }}</div>
+				<div class="actor"><a href="{% url 'userprofile' username=instance.actor %}">{{ instance.actor.first_name }} {{ instance.actor.last_name }}</a></div>
+				<img class="feed-icon-large" src="media/image/icons/{{ instance.target }}-icon.png">
+				<img style="width: 35px; height: 35px; margin-top: 18px; margin-right: 0px; margin-left: 7px;" src="media/image/icons/post-outline.png">
+				{% if instance.action_object.post_image %}
+					<div class="action_object_content_image"><a href="#image{{ forloop.counter }}" data-toggle='modal' style="outline: none;"><img src="{{ instance.action_object.post_image.url }}" class="content_image"></a></div>
+
+					<div class="modal fade" id="image{{ forloop.counter }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+  						<div class="modal-dialog modal-lg" role="document">
+   							<div class="modal-content">
+      							<div class="modal-body">
+        							<img src="{{ instance.action_object.post_image.url }}" style="width: 100%; height: 600px;">
+      							</div>  			
+    						</div>
+  						</div>
+					</div>
+
+					<div class="action_object_content_post">{{ instance.action_object.post_content }}</div>
+				{% elif instance.action_object.post_video %}
+					<div class="youtube-player" data-id="{{ instance.action_object.post_video }}"></div>
+				{% else %}
+					<div class="action_object_content">{{ instance.action_object.post_content }}</div>	
+				{% endif %}
+				<div class="interact" >
+				
+				</div>
+			</div>
+
+		{% endif %}
+
+	{% endif %}
+
+{% else %}
+	{% if instance.verb == 'posted-tool' %}
+		<div class="feed-instance">
+			<img style="width: 60px; height: 60px; border-radius: 20%; margin-left: 13px; margin-top: 10px;" src="media/{{ instance.actor.userprofile.image }}">
+			<div class="action_object"><a href="{% url 'subtopic_guest' username=instance.actor.username topic=instance.target.section subtopic=instance.action_object.sub_section %}">{{ instance.action_object }}</a> -- <span style="font-size: .75em;">{{ instance.action_object.sub_section }}</span></div>
+			<div class="timesince">{{ instance.timesince }}</div>
+			<div class="actor"><a href="{% url 'userprofile' username=instance.actor %}">{{ instance.actor.first_name }} {{ instance.actor.last_name }}</a></div>
+			<img class="feed-icon-large" src="media/image/icons/{{ instance.target }}-icon.png">
+			<img style="width: 31px; height: 31px; margin-top: -60px; margin-left: 0px; margin-top: 18px; margin-right: 0px; margin-left: 7px;" src="media/image/icons/tool-outline.png">
+			<div class="interact" >
+				
+			</div>
+		</div>
+	{% elif instance.verb == 'posted-post' %}
+		<div class="feed-instance">
+			<img style="width: 60px; height: 60px; border-radius: 20%; margin-left: 13px; margin-top: 10px;" src="media/{{ instance.actor.userprofile.image }}">
+			<div class="action_object"><a href="{% url 'subtopic_guest' username=instance.actor.username topic=instance.target.section subtopic=instance.action_object.sub_section %}">{{ instance.action_object }}</a> -- <span style="font-size: .75em;">{{ instance.action_object.sub_section }}</span></div>
+			<div class="timesince">{{ instance.timesince }}</div>
+			<div class="actor"><a href="{% url 'userprofile' username=instance.actor %}">{{ instance.actor.first_name }} {{ instance.actor.last_name }}</a></div>
+			<img class="feed-icon-large" src="media/image/icons/{{ instance.target }}-icon.png">
+			<img style="width: 35px; height: 35px; margin-top: 18px; margin-right: 0px; margin-left: 7px;" src="media/image/icons/post-outline.png">
+			{% if instance.action_object.post_image %}
+				<div class="action_object_content_image"><a href="#image{{ forloop.counter }}" data-toggle='modal' style="outline: none;"><img src="{{ instance.action_object.post_image.url }}" class="content_image"></a></div>
+
+				<div class="modal fade" id="image{{ forloop.counter }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+						<div class="modal-dialog modal-lg" role="document">
+							<div class="modal-content">
+  							<div class="modal-body">
+    							<img src="{{ instance.action_object.post_image.url }}" style="width: 100%; height: 600px;">
+  							</div>  			
+						</div>
+						</div>
+				</div>
+
+				<div class="action_object_content_post">{{ instance.action_object.post_content }}</div>
+			{% elif instance.action_object.post_video %}
+				<div class="youtube-player" data-id="{{ instance.action_object.post_video }}"></div>
+			{% else %}
+				<div class="action_object_content">{{ instance.action_object.post_content }}</div>	
+			{% endif %}
+			<div class="interact" >
+				
+			</div>
+		</div>
+
+	{% endif %}
+{% endif %}
+{% endfor %}

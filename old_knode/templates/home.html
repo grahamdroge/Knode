@@ -1,0 +1,1903 @@
+{% load static %}{% load activity_tags %}{% load knode_extras %}
+<!DOCTYPE html> 
+<html>
+	<head>
+		<link rel="shortcut icon" href="">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js" type="text/javascript"></script>
+		<!-- When referring to static files bootstrap.min.js it doesn work -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="{% static 'vibe/javasc/userhome.js' %}"></script>
+		<script type="text/javascript" src="{% static 'vibe/javasc/youtube-player1.js' %}"></script>
+		
+		<script type="text/javascript">
+			$('document').ready(function(){
+				
+				var search_input = $('input[id="autocomplete-search"]');
+				search_input.autocomplete({
+					source:  "{% url 'search' %}",
+					minLength: 2,
+					appendTo: '#search-user',
+				});
+
+				$('#quick-post-form').submit(function(){
+					event.preventDefault();
+					var interest = $('#interest_choice_btn').text();
+					var subsection = $('#subsection_choice_btn').text();
+					var post_content = $('#quick-post').val();
+					$('#quick-post').val('');
+
+					console.log(interest);
+					console.log(subsection);
+					console.log(post_content);
+
+					$.ajax({
+						url: '{% url "addquick" %}',
+						type: 'POST',
+						data: {'interest': interest,'subsection': subsection,'post_content': post_content}
+					});
+				});
+
+				// $('#image_add_form').submit(function(){
+				// 	event.preventDefault();
+				// 	var interest = $('#interest_choice_btn').text();
+				// 	var subsection = $('#subsection_choice_btn').text();
+				// 	var post_content = $('#quick-post').val();
+				// 	// $('').val('');
+
+				// 	console.log(interest);
+				// 	console.log(subsection);
+				// 	console.log(post_content);
+
+				// 	$.ajax({
+				// 		url: '{% url "addquick" %}',
+				// 		type: 'POST',
+				// 		data: {'interest': interest,'subsection': subsection,'post_content': post_content}
+				// 	});
+				// });
+
+				$('.content_form').submit(function(){
+					var interest = $('#interest_choice_btn').text();
+					var subsection = $('#subsection_choice_btn').text();
+
+					if (interest == 'Interest' && subsection == 'Sub Section') {
+						$('#interest_choice_btn').parent().animate({backgroundColor:'purple'},300,function(){
+							$('#interest_choice_btn').parent().animate({backgroundColor:''},300);
+							
+						});
+						$('#subsection_choice_btn').parent().animate({backgroundColor:'purple'},300,function(){
+							$('#subsection_choice_btn').parent().animate({backgroundColor:''},300);
+						});
+						return false;
+					}
+
+					else if (subsection == 'Sub Section') {
+						$('#subsection_choice_btn').parent().animate({backgroundColor:'purple'},300,function(){
+							$('#subsection_choice_btn').parent().animate({backgroundColor:''},300);
+						});
+						return false;
+					}
+
+					else {
+						return true;
+					}
+
+					
+				});
+
+				// $('.relate_main').hover(function(){
+				// 	$(this).css({'z-index': 30,'opacity': 1});
+				// }, function () {
+				// 	$(this).css({'z-index': 0,'opacity': .75});
+				// 	$(this).animate({})
+				// }
+				// );
+
+
+// ----------------------------------------------------------------------------
+
+				$('.interest_choice').click(function(){
+					var interest = $(this).text();
+					$(this).parent().parent().siblings('#interest_choice_btn').text(interest);
+					$('#subsection_choice_btn').text('Sub Section');
+
+					$('.section').each(function(){
+						$(this).attr('value',interest);
+					});
+
+					$('.relatedpost_menu').load("{% url 'related_posts' %}?interest="+interest);
+					$('#sub_dropdown').load("{% url 'update_post_feed' %}?interest="+interest);
+					
+				});
+
+
+				$('#gear_add').click(function(){
+					if ($('#gear_add_div').is(':visible')) {
+						$('#quick_add_div').show();
+						$('#gear_add_div').hide();
+						$('#image_add_div').hide();
+						$('#video_add_div').hide();
+						$('#file_add_div').hide();
+					} else {
+						$('#quick_add_div').hide();
+						$('#gear_add_div').show();
+						$('#image_add_div').hide();
+						$('#video_add_div').hide();
+						$('#file_add_div').hide();
+					}
+					
+				});
+				
+				$('#image_add').click(function(){
+					if ($('#image_add_div').is(':visible')) {
+						$('#quick_add_div').show();
+						$('#gear_add_div').hide();
+						$('#image_add_div').hide();
+						$('#video_add_div').hide();
+						$('#file_add_div').hide();
+					} else {
+						$('#quick_add_div').hide();
+						$('#gear_add_div').hide();
+						$('#image_add_div').show();
+						$('#video_add_div').hide();
+						$('#file_add_div').hide();
+					}	
+				});
+
+				$('#video_add').click(function(){
+					if ($('#video_add_div').is(':visible')) {
+						$('#quick_add_div').show();
+						$('#gear_add_div').hide();
+						$('#image_add_div').hide();
+						$('#video_add_div').hide();
+						$('#file_add_div').hide();
+					} else {
+						$('#quick_add_div').hide();
+						$('#gear_add_div').hide();
+						$('#image_add_div').hide();
+						$('#video_add_div').show();
+						$('#file_add_div').hide();
+					}	
+				});
+				$('#file_add').click(function(){
+					if ($('#file_add_div').is(':visible')) {
+						$('#quick_add_div').show();
+						$('#gear_add_div').hide();
+						$('#image_add_div').hide();
+						$('#video_add_div').hide();
+						$('#file_add_div').hide();
+					} else {
+						$('#quick_add_div').hide();
+						$('#gear_add_div').hide();
+						$('#image_add_div').hide();
+						$('#video_add_div').hide();
+						$('#file_add_div').show();
+					}
+				});
+
+
+// ---------------------------------------------------------------------- add comment
+
+				$('.comment_form_post').submit(function(){
+					event.preventDefault();
+					var username = $('.wrapper').attr('id');
+					var comment = $(this).children('.comment-input').val();
+					var post_title = $(this).children('input').attr('name');
+					var post_user = $(this).parent().siblings('.actor').children('.user').text();
+					var interest = $(this).parent().siblings('.feed-icon-left').attr('class').split(' ')[0];
+					var subsection = $(this).parent().siblings('.action_object').children('span').text();
+
+					console.log(post_user);
+					console.log(interest);
+					console.log(subsection);
+
+					$(this).children('input').val('');
+					
+
+					var el = $(this).next('div').children('.comment:first').clone();
+
+					el.children('.comment_body').children('.comment_username').text('@'+username);
+					el.children('.comment_body').children('.comment_comment').text(comment);
+					el.children('img').attr('src','media/{{ user.userprofile.image }}');
+					$(this).next('div').append(el);
+
+					$(this).next('div').animate({scrollTop: 500});
+
+					$.ajax({
+						url: '{% url "comment" %}',
+						type: "POST",
+						data: {'title': post_title,'comment': comment, 'type': 'post', 'user': post_user,'interest': interest,'subsection': subsection}
+					});
+				});
+
+				$('.comment_form_tool').submit(function(){
+					event.preventDefault();
+					var username = $('.wrapper').attr('id');
+					var comment = $(this).children('input').val();
+					var tool_name = $(this).children('input').attr('name');
+					var tool_user = $(this).parent().siblings('.actor').children('.user').text();
+					$(this).children('input').val('');
+					console.log(tool_user);
+
+					var el = $(this).next('div').children('.comment:first').clone();
+
+					el.children('.comment_body').children('.comment_username').text('@'+username);
+					el.children('.comment_body').children('.comment_comment').text(comment);
+					el.children('img').attr('src','media/{{ user.userprofile.image }}');
+					$(this).next('div').append(el);
+
+					$(this).next('div').animate({scrollTop: 500});
+
+					$.ajax({
+						url: '{% url "comment" %}',
+						type: "POST",
+						data: {'title': tool_name,'comment': comment, 'type': 'tool'}
+					});
+				});
+
+// ----------------------------------------------------------------------
+
+				
+
+// ---------------------------------------------------------------------- content left search
+
+				$('#target').click(function(){
+					var section = $('#target_section').text();
+					var type = $('#type').text();
+					var post_gear = $('#post-gear').text();
+					console.log(section);
+					console.log(type);
+					console.log(post_gear);
+					$('.target_filt').each(function(){
+						$(this).css('background-color','');
+					});
+					if(post_gear == 'Post') {
+						$('.top_post_instances').load("{% url 'update_top_post' %}?section="+section);
+						$('.target_filt').each(function(){
+							$(this).css('background-color','rgb(220,220,220)');
+						});
+					} else {
+						$('.top_post_instances').load("{% url 'update_top_tool' %}?section="+section);
+						$('.target_filt').each(function(){
+							$(this).css('background-color','rgb(220,220,220)');
+						});
+					}
+				});
+				
+// ---------------------------------------------------------------------- Reroute code
+
+				$('.reroute_sub').click(function(){
+					var string = $(this).parent().siblings('img').next('span').attr('class');
+					var arr = string.split("_");
+					var username = arr[0];
+					var title = arr[1];
+					var subsection = arr[2];
+					var interest = arr[3];
+					var kind = arr[4];
+					var new_sub = $(this).text();
+
+					var text_num = $(this).parent().siblings('img').next('span').text();
+					var num = parseInt(text_num);
+					num += 1;
+					$(this).parent().siblings('img').next('span').text(num);
+					$(this).parent().hide();
+
+					console.log(username);
+					console.log(title);
+					console.log(subsection);
+					console.log(interest);
+					console.log(kind);
+					console.log(new_sub);
+
+					$.ajax({
+						url: "{% url 'reroute' %}",
+						type: "POST",
+						data: {'username': username,'title': title,'subsection': subsection,'kind': kind,'interest': interest,'new_sub': new_sub}
+					});
+				});
+
+// ---------------------------------------------------------------------- save click
+
+
+
+				$('.save').click(function(){
+					if($(this).attr('src') == '{% static "vibe/media/image/icons/saved.png" %}'){
+						$(this).attr('src','{% static "vibe/media/image/icons/save.png" %}');
+						var text = $(this).next('.num_saved').text();
+						var num = parseInt(text);
+						num-=1;
+						$(this).next('.num_saved').text(num);
+						var arr = $(this).attr('value').split("_");
+						var user = arr[0];
+						var title = arr[1];
+						var sub = arr[2];
+						var interest = arr[3];
+						var type = arr[4];
+				
+						$.ajax({
+							url: "{% url 'home' %}",
+							type: "POST",
+							data: {'username': user, 'title': title, 'type': type, 'sub': sub, 'interest': interest, 'action': 'unsave' }
+						});
+						
+					} else {
+						$(this).attr('src','{% static "vibe/media/image/icons/saved.png" %}');
+						var text = $(this).next('.num_saved').text();
+						var num = parseInt(text);
+						num+=1;
+						$(this).next('.num_saved').text(num);
+						var arr = $(this).attr('value').split("_");
+						var user = arr[0];
+						var title = arr[1];
+						var sub = arr[2];
+						var interest = arr[3];
+						var type = arr[4];
+
+						$.ajax({
+							url: "{% url 'home' %}",
+							type: "POST",
+							data: {'username': user, 'title': title, 'type': type, 'sub': sub, 'interest': interest, 'action': 'save' }
+						});
+					 }
+				});
+			});
+
+// ----------------------------------------------------------------------				
+		</script>
+
+		<link rel="stylesheet" href="http://code.jquery.com/ui/1.8.18/themes/base/jquery-ui.css" type="text/css" media="all"/>
+  		<link rel="stylesheet" type="text/css" href="{% static 'boots/css/bootstrap.min.css' %}">
+		<link rel="stylesheet" type="text/css" href="{% static 'vibe/cssfiles/home.css' %}">
+		<link href="https://fonts.googleapis.com/css?family=Baloo+Thambi" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+
+	</head>
+
+	<div class="wrapper" id="{{ user.username }}">
+	<body>
+		<div class="navbar navbar-inverse navbar-fixed-top" role="navigation" style="height: 53px;">
+				<div class="navbar-header">
+					<div class="navbar-brand" style="font-family: 'Baloo Thambi', sans-serif; font-size: 38px; cursor: pointer;">        KN <img src="{% static 'vibe/media/image/icons/knode.png' %}" class="knode-logo" style="display: inline; width: 38px; height: 38px; border: solid; border-width: 2px; padding: 2px; border-radius: 100%; top: -3px; position: relative;"> DE</div>
+
+
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+						<span class="sr-only">Toggle Navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					
+					<ul class="navbar navbar-nav navbar-left">
+
+						<li>
+							<form method="POST" id="search" role="search" class="navbar-form navbar-left">
+							{% csrf_token %}
+							<div class="form-group">
+								<input name="search-user" id="autocomplete-search" class="form-control" placeholder="Search...  ">
+								<button type="submit" class="btn btn-default" id="search-button"><span class="glyphicon glyphicon-search"></span></button>
+								<div id="search-user">
+								
+								</div>
+							</div>	
+							</form>	
+						</li>
+
+						<li class="dropdown">
+							<div class="dropdown" style="margin-top: 7px;">
+								{% if post_feed %}
+									<a role="button" data-toggle="dropdown" class="btn btn-primary" data-target="#" style="background-color: rgb(80,80,80); border-color: rgb(80,80,80);"><img src="{% static 'vibe/media/image/icons/post.png' %}" style="width: 20px; height: 20px; margin-right: 3px;">
+						                Feed Filter <span class="caret"></span>
+						            </a>
+								{% elif tool_feed %}
+									<a role="button" data-toggle="dropdown" class="btn btn-primary" data-target="#" style="background-color: rgb(80,80,80); border-color: rgb(80,80,80);"><img src="{% static 'vibe/media/image/icons/gear-box.png' %}" style="width: 20px; height: 20px; margin-right: 3px;">
+						                Feed Filter <span class="caret"></span>
+						            </a>
+								{% elif section_feed %}
+								{% with 'vibe/media/image/icons/'|add:section_feed|add:'-icon.png' as route %}
+									<a role="button" data-toggle="dropdown" class="btn btn-primary" data-target="#" style="background-color: rgb(80,80,80); border-color: rgb(80,80,80);"><img src="{% static route %}" style="width: 20px; height: 20px; margin-right: 3px;">
+						                Feed Filter <span class="caret"></span>
+						            </a>
+						        {% endwith %}    
+								{% else %}
+						            <a role="button" data-toggle="dropdown" class="btn btn-primary" data-target="#" style="background-color: rgb(80,80,80); border-color: rgb(80,80,80);">
+						                Feed Filter <span class="caret"></span>
+						            </a>
+						        {% endif %}
+					    		<ul class="dropdown-menu">
+					    		
+						              <li class="dropdown-submenu" style="text-align: center;">
+						              	<a href="#" class="test" style="text-decoration: none; color: black;">Section</a>
+						              		<ul class="dropdown-menu">	
+						              			
+						              			{% for section in user_following_set %}
+												{% if section %}
+												{% with 'vibe/media/image/icons/'|add:section|add:'-icon-feed.png' as route %}
+												<form method="POST">
+												{% csrf_token %}
+													<li class="filter-drop-feed"><button type="submit" name="feed-filter" value="{{ section }}" class="filter-get">{{ section }}</button></li>
+												</form>
+												{% endwith %}
+												{% endif %}
+												{% endfor %}
+										
+						              		</ul>
+
+						              </li>
+						              <form method="POST">
+						              {% csrf_token %}
+						              	<li class="filter-drop-feed"><button type="submit" name="feed-filter" value="tool" class="filter-get">tool</button></li>
+						              </form>
+						              <form method="POST">
+						              {% csrf_token %}
+						              	<li class="filter-drop-feed"><button type="submit" name="feed-filter" value="post" class="filter-get">post</button></li>
+						              </form>
+						              <form method="POST">
+						              {% csrf_token %}
+						              	<li class="filter-drop-feed"><button type="submit" name="feed-filter" value="none" class="filter-get">none</button></li>
+
+						        </form>
+					            </ul>
+					        </div>
+						</li>
+
+					</ul>
+					
+				</div>
+				<div class="navbar-collapse collapse">
+					<ul class="nav navbar-nav navbar-right">
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" style="position: relative; top: -2px;"><img src="{% static 'vibe/media/image/icons/notification.png' %}" style="width: 25px; height: 25px; margin-bottom: 0; margin-right: 8px;"></a>
+							<ul class="dropdown-menu">
+							{% if notifications %}
+								{% for notification in notifications %}
+									<li><a href="#" class="dropdown-toggle" style="font-family: 'Comic Sans MS'; font-size: 12px;">{{ notification.actor }}  {{ notification.verb }}  {{ notification.action_object}}
+								{% endfor %}</a></li>
+							{% endif %}
+							</ul>
+						</li>
+						<li>
+							<a href="{% url 'home' %}" style="margin-bottom: 0;"><img src="{% static 'vibe/media/image/icons/feed.png' %}" style="width: 22px; height: 22px;"></a>
+						</li>
+
+						<li>
+							<a href="{% url 'userprofile' username=user.username %}" style="margin-bottom: 0;"><img src="{% static 'vibe/media/image/icons/knode.png' %}" style="width: 22px; height: 22px;"></a>
+						</li>
+
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="media/image/icons/settings.png" style="margin-right: 20px; width: 22px; height: 22px;"></a>
+							<ul class="dropdown-menu">
+								<li><a href="{% url 'edit' %}" class="dropdown-toggle" style="font-family: 'Comic Sans MS'; font-size: 18px;">Edit Profile</a></li>
+								<li><a href="{% url 'logout' %}" class="dropdown-toggle" style="font-family: 'Comic Sans MS'; font-size: 18px;">Logout</a></li>
+							</ul>
+						</li>
+
+						
+
+					</ul>
+				</div>
+		</div>
+		
+
+	<div class="user-items">
+
+		<div style="width: 100%; height: 6%; position: absolute; top: 1%; margin-left: 2px;">
+
+			<li class="dropdown target_filt type">
+				<a href="#" id="type" class="dropdown-toggle" data-toggle="dropdown" style="color: black; font-size: 18px; position: absolute; width: 100%; height: 100%; margin-top: 5px; text-decoration: none; font-family: 'Baloo Thambi', sans-serif; text-align: center;">Trending</a>
+
+				<ul class="dropdown-menu" style="width: 100%;">
+					<li class="filter-drop"><button type="button" class="choice">Recommended</button></li>
+					<li class="filter-drop"><button type="button" class="choice">Trending</button></li>
+					<li class="filter-drop"><button type="button" class="choice">Top</button></li>
+					<li class="filter-drop"><button type="button" class="choice">Near Me</button></li>
+				</ul>
+
+			</li>
+
+			<li class="dropdown target_filt post-gear">
+				<a href="#" id="post-gear" class="dropdown-toggle" data-toggle="dropdown" style="color: black; font-size: 18px; position: absolute; width: 100%; height: 100%; margin-top: 5px; text-decoration: none; font-family: 'Baloo Thambi', sans-serif; text-align: center;">Post</a>
+
+				<ul class="dropdown-menu" style="width: 100%; white-space: nowrap;">
+					<li class="filter-drop"><button type="button" class="choice">Post</button></li>
+					<li class="filter-drop"><button type="button" class="choice">Gear</button></li>
+				</ul>
+			</li>
+
+
+			<li class="dropdown target_filt" style="display: inline-block; width: 39%; height: 90%; border: solid; border-width: 1px; border-radius: 10px; border-color: black;box-shadow: 0px 0px 7px #000; background-color: rgb(220,220,220);">
+
+				<a href="#" id="target_section" class="dropdown-toggle" data-toggle="dropdown"> Technology</a>
+
+				<ul class="dropdown-menu" style="height: 170px; overflow-y: scroll;">
+					{% for topic in topics %}
+						<li class="filter-drop"><button type="button" class="choice">{{ topic }}</button></li>
+					{% endfor %}
+				</ul>
+			</li>
+
+			<li style="width: 9.8%; height: 90%; border: solid; border-width: 1px; border-color: black; border-radius: 10px; display: inline-block;box-shadow: 0px 0px 7px #000;background-color: rgb(220,220,220);" id="target">
+				<img src="{% static 'vibe/media/image/icons/target.png' %}" style="width: 28px; height: 28px; position: absolute; margin: 3px 3px 3px 5px;">
+			</li>
+
+			
+		</div>
+		<div class="top_post_instances">
+			{% include 'top_post.html' %}
+		</div>
+
+	</div>
+
+	<div class="content-right" id="content-right">
+	
+		{% include 'content_right.html' %}
+		
+	</div>
+
+<!-- FEED -->
+
+		<div class="main-feed" id="feed">
+			<div style="width: 99%; min-height: 17%; border-radius: 10px; border: solid; margin-top: 8px; background-color: rgb(240,240,240); box-shadow: 0px 0px 18px #000;">
+			<div style="margin-top: 20px; height: 30%;">
+				<div class="dropdown" style="position: relative; top: -14px; width: 26%; height: 100%; border-right: solid; border-width: 2px; display: inline-block; margin-left: 5px; margin-top: 3px; text-align: center;">
+					<button id="interest_choice_btn" class="dropdown-toggle" data-toggle="dropdown" style="display: block; font-size: 17px; font-family: 'Baloo Thambi', sans-serif; margin-top: 4px; margin-right: 8px; margin-left: 8px; text-transform: uppercase; background: none; outline: background: none; border: none;">Interest</button>
+
+						<ul class="dropdown-menu" style="width: 100%;">
+						{% for interest in interests %}
+							<li><button type="button" class="interest_choice">{{ interest }}</button></li>
+						{% endfor %}
+						</ul>
+					
+				</div>
+				<div class="dropdown" style="position: relative; top: -14px; width: 26%; height: 100%; border-right: solid; border-width: 2px; display: inline-block; margin-left: 0px; margin-top: 3px; text-align: center;">
+					<button id="subsection_choice_btn" class="dropdown-toggle" data-toggle="dropdown" style="display: block; font-size: 17px; font-family: 'Baloo Thambi', sans-serif; margin-top: 4px; margin-right: 8px; margin-left: 8px; text-transform: uppercase; background: none; outline: background: none; border: none;">Sub Section</button>
+
+					<ul class="dropdown-menu" id="sub_dropdown" style="width: 100%;">
+						{% include 'post_feed_sub.html' %}
+					</ul>
+				</div>
+				<div id="image_add" class="content-type" style="background-color: black; cursor: pointer;">
+					<img src="{% static 'vibe/media/image/icons/picture.png' %}" style="width: 70%; height: 80%; margin-left: 8px; margin-top: 4px;">
+				</div>
+				<div class="content-type" id="file_add" style="background-color: black; cursor: pointer;">
+					<img src="{% static 'vibe/media/image/icons/post.png' %}" style="width: 70%; height: 80%; margin-left: 8px; margin-top: 4px;">
+				</div>
+				<div class="content-type" id="gear_add" style="background-color: black; cursor: pointer;">
+					<img src="{% static 'vibe/media/image/icons/gear-box.png' %}" style="width: 70%; height: 80%; margin-left: 8px; margin-top: 4px;">
+				</div>
+				<div class="content-type" id="video_add" style="background-color: black; cursor: pointer;">
+					<img src="{% static 'vibe/media/image/icons/youtube.png' %}" style="width: 70%; height: 80%; margin-left: 8px; margin-top: 4px;">
+				</div>
+			</div>
+				<div id="quick_add_div" style="position: relative; width: 100%; height: 45%; margin-top: 10px;">
+					<!-- <input type="text" name="" placeholder="  Add quick post..." style="width: 100%; border-radius: 10px; height: 100%;"> -->
+					<form method="POST" id="quick-post-form" class="content_form">
+					{% csrf_token %}
+						<textarea id="quick-post" cols="40" rows="2" placeholder="  Add Quick Post" style="width: 87%; resize: none; outline: none; height: 100%; margin-left: 6px; border-radius: 10px 10px 10px 10px;"></textarea>
+						<button type="submit" style="position: absolute; background-color: black; color: white; border-color: black; left: 89.3%; top: 0px; height: 46px; width: 55px; border-radius: 10px 10px 10px 10px;"><img src="{% static 'vibe/media/image/icons/add_quick.png' %}" style="width: 70%; height: 70%;"></button>
+					</form>
+				</div>
+
+				<div id="gear_add_div" style="position: relative; width: 100%; height: 45%; margin-top: 10px; display: none;">
+				<form method="POST" id="gear_add_form" enctype="multipart/form-data" class="content_form">
+				{% csrf_token %}
+					<input type="hidden" class="section" name="section" value="">
+					<input type="hidden" class="sub_section" name="sub_section" value="">
+					<div style="display: inline-block; width: 45%; position: relative; margin-left: 10px; margin-bottom: 9px; border-radius: 5px;">{{ add_tool_form.tool_name }}</div> 
+					<div style="display: inline-block; width: 45%; position: relative; margin-left: 4px; margin-bottom: 9px; border-radius: 5px;">{{ add_tool_form.tool_link }}</div>
+					<!-- <div style="display: block; width: 95%; position: relative; margin-left: 14px; margin-top: 5px; border-radius: 5px;">{{ add_tool_form.tool_content }}</div> -->
+					<button type="submit" name="tool" style="position: absolute; background-color: black; color: white; border-color: black; left: 93.6%; top: -2px; height: 28px; width: 30px; border-radius: 5px 5px 5px 5px;"><img src="{% static 'vibe/media/image/icons/add_quick.png' %}" style="width: 100%; height: 100%;"></button>
+				</form>
+				</div>
+
+				<div id="image_add_div" style="position: relative; width: 100%; height: 45%; margin-top: 10px; display: none;">
+				<form method="POST" id="image_add_form" enctype="multipart/form-data" class="content_form">
+				{% csrf_token %}
+					<input type="hidden" class="section" name="section" value="">
+					<input type="hidden" class="sub_section" name="sub_section" value="">
+					<button class="related_btn" data-toggle="dropdown" type="button" style="width: 30px; height: 25px; margin-left: 5px; position: relative; top: 2px; border-radius: 5px;"><img src="{% static 'vibe/media/image/icons/relatedpost.png' %}" style="width: 100%; height: 100%; margin-bottom: 5px;"></button>
+
+						<ul class="dropdown-menu relatedpost_menu" style="position: absolute; top: 25px;">
+							
+						</ul>
+
+					<div style="display: inline-block; width: 45%; position: relative; margin-left: 5px; margin-bottom: 9px; border-radius: 5px;">{{ add_post_form.post_title }}</div> 
+					<div style="display: inline-block; width: 45%; position: relative; margin-left: 4px; margin-bottom: 9px; border-radius: 5px;">{{ add_post_form.post_image }}</div>
+					<div style="display: block; width: 95%; position: relative; margin-left: 10px; margin-top: 5px; border-radius: 5px;">{{ add_post_form.post_content }}</div>
+					<button type="submit" name="post" style="position: absolute; background-color: black; color: white; border-color: black; left: 93.6%; top: -2px; height: 28px; width: 30px; border-radius: 5px 5px 5px 5px;"><img src="{% static 'vibe/media/image/icons/add_quick.png' %}" style="width: 100%; height: 100%;"></button>
+				</form>
+				</div>
+				<div id="file_add_div" style="position: relative; width: 100%; height: 45%; margin-top: 10px; display: none;">
+				<form method="POST" id="file_add_form" enctype="multipart/form-data" class="content_form">
+				{% csrf_token %}
+					<input type="hidden" class="section" name="section" value="">
+					<input type="hidden" class="sub_section" name="sub_section" value="">
+					<button class="related_btn" data-toggle="dropdown" type="button" style="width: 30px; height: 25px; margin-left: 5px; position: relative; top: 2px; border-radius: 5px;"><img src="{% static 'vibe/media/image/icons/relatedpost.png' %}" style="width: 100%; height: 100%; margin-bottom: 5px;"></button>
+
+						<ul class="dropdown-menu relatedpost_menu" style="position: absolute; top: 25px;">
+							
+						</ul>
+					<div style="display: inline-block; width: 58%; position: relative; margin-left: 10px; margin-bottom: 9px; border-radius: 5px; top: -8px;">{{ add_post_form.post_title }}</div> 
+					<div style="position: relative; display: inline-block; width: 30%; position: relative; height: 50px; margin-bottom: 8px; padding-top: 3px; margin-left: 16px; top: -12px;">
+						<img src="{% static 'vibe/media/image/icons/doc.png' %}" style="width: 45px; height: 45px; margin-left: 7px;">
+						<img src="{% static 'vibe/media/image/icons/pdf.png' %}" style="width: 45px; height: 45px;">
+						<img src="{% static 'vibe/media/image/icons/ppt.png' %}" style="width: 45px; height: 45px;">
+						{{ add_post_form.post_file }}
+					</div>
+					<div style="display: block; width: 95%; position: relative; margin-left: 10px; margin-top: 5px; border-radius: 5px;">{{ add_post_form.post_content }}</div>
+					<button type="submit" name="post" style="position: absolute; background-color: black; color: white; border-color: black; left: 93.6%; top: -2px; height: 28px; width: 30px; border-radius: 5px 5px 5px 5px;"><img src="{% static 'vibe/media/image/icons/add_quick.png' %}" style="width: 100%; height: 100%;"></button>
+				</form>
+				</div>
+				<div id="video_add_div" style="position: relative; width: 100%; height: 45%; margin-top: 10px; display: none;">
+				<form method="POST" id="video_add_form" enctype="multipart/form-data" class="content_form">
+				{% csrf_token %}
+					<input type="hidden" class="section" name="section" value="">
+					<input type="hidden" class="sub_section" name="sub_section" value="">
+					<button class="related_btn" data-toggle="dropdown" type="button" style="width: 30px; height: 25px; margin-left: 5px; position: relative; top: 2px; border-radius: 5px;"><img src="{% static 'vibe/media/image/icons/relatedpost.png' %}" style="width: 100%; height: 100%; margin-bottom: 5px;"></button>
+
+						<ul class="dropdown-menu relatedpost_menu" style="position: absolute; top: 25px;">
+							
+						</ul>
+					<div style="display: inline-block; width: 40%; position: relative; margin-left: 6px; margin-bottom: 9px; border-radius: 5px;">{{ add_post_form.post_title }}</div> 
+					<div style="display: inline-block; width: 45%; position: relative; margin-left: 4px; margin-bottom: 9px; border-radius: 5px;">{{ add_post_form.post_video }}</div>
+					<div style="display: block; width: 95%; position: relative; margin-left: 10px; margin-top: 5px; border-radius: 5px;">{{ add_post_form.post_content }}</div>
+					<button type="submit" name="post" style="position: absolute; background-color: black; color: white; border-color: black; left: 93.6%; top: -2px; height: 28px; width: 30px; border-radius: 5px 5px 5px 5px;"><img src="{% static 'vibe/media/image/icons/add_quick.png' %}" style="width: 100%; height: 100%;"></button>
+				</form>
+				</div>
+			</div>
+
+	{% for instance in stream %}
+			{% if post_feed %}
+
+				{% if instance.verb == 'posted-post' %}
+					<div class="feed-instance">
+						<img style="width: 60px; height: 60px; border-radius: 20%; margin-left: 13px; margin-top: 10px;" src="media/{{ instance.actor.userprofile.image }}">
+						<div class="action_object"><div class="title" href="#">{{ instance.action_object }}</div> -- <span style="font-size: .75em;">{{ instance.action_object.sub_section }}</span></div>
+						<div class="timesince">{{ instance.timesince }}</div>
+						<div class="actor"><a class="user" href="{% url 'userprofile' username=instance.actor %}">{{ instance.actor.first_name }} {{ instance.actor.last_name }}</a></div>
+						<img class="{{ instance.action_object.sub_section.interest }} feed-icon-left" src="media/image/icons/{{ instance.action_object.sub_section.interest }}-icon.png">
+						<img class="feed-icon-right" src="media/image/icons/post-outline.png">
+						{% if instance.action_object.post_image %}
+							<div class="action_object_content_image"><a href="#image{{ forloop.counter }}" data-toggle='modal' style="outline: none;"><img src="{{ instance.action_object.post_image.url }}" class="content_image"></a></div>
+
+							<div class="modal fade" id="image{{ forloop.counter }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+		  						<div class="modal-dialog modal-lg" role="document">
+		   							<div class="modal-content" style="border-radius: 13px;">
+		      							<div class="modal-body" style="margin: 0; padding: 0; border-radius: 10px;">
+		        							<img src="{{ instance.action_object.post_image.url }}" style="width: 100%; height: 650px; border-radius: 10px;">
+		      							</div>  			
+		    						</div>
+		  						</div>
+							</div>
+
+							<div class="action_object_content_post">{{ instance.action_object.post_content }}</div>
+						{% elif instance.action_object.post_video %}
+							<div class="youtube-player" data-id="{{ instance.action_object.post_video }}"></div>
+							<div class="action_object_content_post">{{ instance.action_object.post_content }}</div>
+						{% elif instance.action_object.post_file %}
+							<object style="margin-top: 12px;" width="100%" height="450px" data="{{ instance.action_object.post_file.url }}"></object>
+						{% else %}
+							<div class="action_object_content">{{ instance.action_object.post_content }}</div>	
+						{% endif %}
+						
+						<div class="interact" >
+						{% if instance.action_object|save_lookup_post:user %}
+							<img class="save" value="{{ instance.actor.username }}_{{ instance.action_object }}_{{ instance.action_object.sub_section }}_{{ instance.action_object.sub_section.interest }}_post" style="float: right; height: 20px; width: 20px; margin-top: 5px;" src="{% static 'vibe/media/image/icons/saved.png' %}">
+						{% else %}
+							<img class="save" value="{{ instance.actor.username }}_{{ instance.action_object }}_{{ instance.action_object.sub_section }}_{{ instance.action_object.sub_section.interest }}_post" style="float: right; height: 20px; width: 20px; margin-top: 5px;" src="{% static 'vibe/media/image/icons/save.png' %}">
+						{% endif %}
+							<span class="num_saved"> {{ instance.action_object.num_saved }}</span>
+							<div class="comment_btn">
+								<img style="float: right; width: 20px; height: 20px; margin-top: 5px; margin-right: 8px;" src="{% static 'vibe/media/image/icons/comments.png' %}"><span style="float: right; margin-right: 5px; margin-top: 8px; font-size: 12px; font-style: italic;">  {{ instance.action_object.post_comments.all.count }}</span>
+							</div>
+							<div class="dropdown">
+								<img class="re-route" data-toggle="dropdown" src="{% static 'vibe/media/image/icons/re-route.png' %}" style="cursor: pointer;"><span class="{{ instance.actor }}_{{ instance.action_object }}_{{ instance.action_object.sub_section }}_{{ instance.action_object.sub_section.interest }}_post" style="float: right; margin-top: 9px; font-size: 13px; margin-right: 7px;">{{ instance.action_object.num_reroute }}</span>
+
+									<ul class="dropdown-menu" style="position: relative; left: 68%; top: 28px; width: 20px;">
+									{% for sub in instance.action_object|reroute_sub:user %}
+										<li class="reroute_sub" style="font-size: 13px; width: 100%; text-align: center; cursor: pointer;">{{ sub }}</li>
+									{% endfor %}
+									</ul>
+							</div>
+							{% if instance.action_object|link_lookup:'post' %}
+								<img class="link" src="{% static 'vibe/media/image/icons/link.png' %}" style="width: 17px; height: 17px; margin-top: 6px; margin-right: 8px; position: absolute;">
+								<div class="link_num" style="font-size: 13px; display: inline-block; margin-top: 6px; margin-left: 24px;">
+									 [ {{ instance.action_object|link_lookup:'post' }} ]
+								</div>
+								<div class="link_verbose">
+								[
+									{% for title in instance.action_object|link_lookup:'toolnames' %}
+										{{ title.tool.tool_name }} : 
+									{% endfor %}
+								]
+								</div>
+							{% endif %}
+						</div>			
+						<div class="comments">
+							<form class="comment_form_post">
+								<input name="{{ instance.action_object.post_title }}" placeholder="   Add to discussion..." class="comment-input">
+							</form>
+							<div style="display: inline-block; overflow-y: scroll; max-height: 300px; width: 100%;">
+							{% for comment in instance.action_object.post_comments.all %}
+								<div class="comment">
+									<img src="media/{{ comment.user.userprofile.image }}" class="comment_image">
+									<div class="comment_body">
+										<div class="comment_username">@{{ comment.user.username }}</div> 
+										<div class="comment_comment">	{{ comment.comment }}</div>
+									</div>
+								</div>
+							{% endfor %}
+							</div>
+						</div>
+					</div>
+					
+				{% elif instance.verb == 'rerouted_post' %}
+					<div class="feed-instance">
+						<img style="width: 60px; height: 60px; border-radius: 20%; margin-left: 13px; margin-top: 10px;" src="media/{{ instance.action_object.sub_section.interest.userprofile.image }}">
+						<div class="action_object"><div class="title" href="#">{{ instance.action_object }}</div> -- <span style="font-size: .75em;">{{ instance.action_object.sub_section }}</span></div>
+						<div class="timesince">{{ instance.timesince }}</div>
+						<div class="actor"><a class="user" href="{% url 'userprofile' username=instance.action_object.sub_section.interest.userprofile.user.username %}">{{ instance.action_object.sub_section.interest.userprofile.user.first_name }} {{ instance.action_object.sub_section.interest.userprofile.user.last_name }}</a> ------ <img src="{% static 'vibe/media/image/icons/re-route.png' %}" style="width: 16px; height: 16px; margin-left: 4px; margin-right: 4px;"><span style="font-size: 11px;">  {{ instance.actor.first_name }} {{ instance.actor.last_name }}</span></div>
+						<img class="{{ instance.action_object.sub_section.interest }} feed-icon-left" src="media/image/icons/{{ instance.action_object.sub_section.interest }}-icon.png">
+						<img class="feed-icon-right" src="media/image/icons/post-outline.png">
+						{% if instance.action_object.post_image %}
+							<div class="action_object_content_image"><a href="#image{{ forloop.counter }}" data-toggle='modal' style="outline: none;"><img src="{{ instance.action_object.post_image.url }}" class="content_image"></a></div>
+
+							<div class="modal fade" id="image{{ forloop.counter }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+		  						<div class="modal-dialog modal-lg" role="document">
+		   							<div class="modal-content" style="border-radius: 13px;">
+		      							<div class="modal-body" style="margin: 0; padding: 0; border-radius: 10px;">
+		        							<img src="{{ instance.action_object.post_image.url }}" style="width: 100%; height: 650px; border-radius: 10px;">
+		      							</div>  			
+		    						</div>
+		  						</div>
+							</div>
+						
+							<div class="action_object_content_post">{{ instance.action_object.post_content }}</div>
+						
+						{% elif instance.action_object.post_video %}
+							<div class="youtube-player" data-id="{{ instance.action_object.post_video }}"></div>
+							<div class="action_object_content_post">{{ instance.action_object.post_content }}</div>
+						{% elif instance.action_object.post_file %}
+							<object style="margin-top: 12px;" width="100%" height="450px" data="{{ instance.action_object.post_file.url }}"></object>
+						{% else %}
+							<div class="action_object_content">{{ instance.action_object.post_content }}</div>	
+						{% endif %}
+						<div class="interact" >
+							{% if instance.action_object|save_lookup_post:user %}
+								<img class="save" value="{{ instance.action_object.sub_section.interest.userprofile.user.username }}_{{ instance.action_object }}_{{ instance.action_object.sub_section }}_{{ instance.action_object.sub_section.interest }}_post" style="float: right; height: 20px; width: 20px; margin-top: 5px;" src="{% static 'vibe/media/image/icons/saved.png' %}">
+							{% else %}
+								<img class="save" value="{{ instance.action_object.sub_section.interest.userprofile.user.username }}_{{ instance.action_object }}_{{ instance.action_object.sub_section }}_{{ instance.action_object.sub_section.interest }}_post" style="float: right; height: 20px; width: 20px; margin-top: 5px;" src="{% static 'vibe/media/image/icons/save.png' %}">
+							{% endif %}
+								<span class="num_saved">{{ instance.action_object.num_saved }}</span>
+							
+							
+							<div class="comment_btn">
+								<img style="float: right; width: 20px; height: 20px; margin-top: 5px; margin-right: 8px;" src="{% static 'vibe/media/image/icons/comments.png' %}"><span style="float: right; margin-right: 7px; margin-top: 8px; font-size: 12px; font-style: italic;">  {{ instance.action_object.post_comments.all.count }}</span>
+							</div>
+							<div class="dropdown">
+								<img class="re-route" data-toggle="dropdown" src="{% static 'vibe/media/image/icons/re-route.png' %}" style="cursor: pointer;"><span class="{{ instance.actor }}_{{ instance.action_object }}_{{ instance.action_object.sub_section }}_{{ instance.action_object.sub_section.interest }}_post" style="float: right; margin-top: 9px; font-size: 13px; margin-right: 7px;">{{ instance.action_object.num_reroute }}</span>
+
+									<ul class="dropdown-menu" style="position: relative; left: 68%; top: 28px; width: 20px;">
+									{% for sub in instance.action_object|reroute_sub:user %}
+										<li class="reroute_sub" style="font-size: 13px; width: 100%; text-align: center; cursor: pointer;">{{ sub }}</li>
+									{% endfor %}
+									</ul>
+							</div>
+							{% if instance.action_object|link_lookup:'post' %}
+								<img class="link" src="{% static 'vibe/media/image/icons/link.png' %}" style="width: 17px; height: 17px; margin-top: 6px; margin-right: 8px; position: absolute;">
+								<div class="link_num" style="font-size: 13px; display: inline-block; margin-top: 6px; margin-left: 24px;">
+									 [ {{ instance.action_object|link_lookup:'post' }} ]
+								</div>
+								<div class="link_verbose">
+								[
+									{% for title in instance.action_object|link_lookup:'toolnames' %}
+										{{ title.tool.tool_name }} : 
+									{% endfor %}
+								]
+								</div>
+							{% endif %}
+						</div>								
+						<div class="comments">
+							<form class="comment_form_post">
+								<input name="{{ instance.action_object.post_title }}" placeholder="   Add to discussion..." class="comment-input">
+							</form>
+							<div style="display: inline-block; overflow-y: scroll; max-height: 300px; width: 100%;">
+							{% for comment in instance.action_object.post_comments.all %}
+								<div class="comment">
+									<img src="media/{{ comment.user.userprofile.image }}" class="comment_image"><div class="comment_body"><div class="comment_username">@{{ comment.user.username }}</div> <div class="comment_comment">	{{ comment.comment }}</div></div>
+								</div>
+							{% endfor %}
+							</div>
+						</div>
+					</div>
+				{% endif %}
+
+			{% elif tool_feed %}
+
+				{% if instance.verb == 'posted-tool' %}
+					<div class="feed-instance">
+						<img style="width: 60px; height: 60px; border-radius: 20%; margin-left: 13px; margin-top: 10px;" src="media/{{ instance.actor.userprofile.image }}">
+						<div class="action_object"><div class="title" href="#">{{ instance.action_object }}</div> -- <span style="font-size: .75em;">{{ instance.action_object.sub_section }}</span></div>
+						<div class="timesince">{{ instance.timesince }}</div>
+						<div class="actor"><a class="user" href="{% url 'userprofile' username=instance.actor %}">{{ instance.actor.first_name }} {{ instance.actor.last_name }}</a></div>
+						<img class="{{ instance.action_object.sub_section.interest }} feed-icon-left" src="media/image/icons/{{ instance.action_object.sub_section.interest }}-icon.png">
+						<img class="feed-icon-right" src="media/image/icons/tool-outline.png">
+						
+						<div class="interact" >
+						{% if instance.action_object|save_lookup_tool:user %}
+							<img class="save" value="{{ instance.actor.username }}_{{ instance.action_object }}_{{ instance.action_object.sub_section }}_{{ instance.action_object.sub_section.interest }}_tool" style="float: right; height: 20px; width: 20px; margin-top: 5px;" src="{% static 'vibe/media/image/icons/saved.png' %}">
+						{% else %}
+							<img class="save" value="{{ instance.actor.username }}_{{ instance.action_object }}_{{ instance.action_object.sub_section }}_{{ instance.action_object.sub_section.interest }}_tool" style="float: right; height: 20px; width: 20px; margin-top: 5px;" src="{% static 'vibe/media/image/icons/save.png' %}">
+						{% endif %}
+							<span class="num_saved"> {{ instance.action_object.num_saved }}</span>
+							<div class="comment_btn">
+								<img style="float: right; width: 20px; height: 20px; margin-top: 5px; margin-right: 8px;" src="{% static 'vibe/media/image/icons/comments.png' %}"><span style="float: right; margin-right: 5px; margin-top: 8px; font-size: 12px; font-style: italic;">  {{ instance.action_object.tool_comments.all.count }}</span>
+							</div>
+							<div class="dropdown">
+								<img class="re-route" data-toggle="dropdown" src="{% static 'vibe/media/image/icons/re-route.png' %}" style="cursor: pointer;"><span class="{{ instance.actor }}_{{ instance.action_object }}_{{ instance.action_object.sub_section }}_{{ instance.action_object.sub_section.interest }}_tool" style="float: right; margin-top: 9px; font-size: 13px; margin-right: 7px;">{{ instance.action_object.num_reroute }}</span>
+
+									<ul class="dropdown-menu" style="position: relative; left: 68%; top: 28px; width: 20px;">
+									{% for sub in instance.action_object|reroute_sub:user %}
+										<li class="reroute_sub" style="font-size: 13px; width: 100%; text-align: center; cursor: pointer;">{{ sub }}</li>
+									{% endfor %}
+									</ul>
+							</div>
+							{% if instance.action_object|link_lookup:'tool' %}
+								<img class="link" src="{% static 'vibe/media/image/icons/link.png' %}" style="width: 17px; height: 17px; margin-top: 6px; margin-right: 8px; position: absolute;">
+								<div class="link_num" style="font-size: 13px; display: inline-block; margin-top: 6px; margin-left: 24px;">
+									 [ {{ instance.action_object|link_lookup:'tool' }} ]
+								</div>
+								<div class="link_verbose">
+								[
+									{% for title in instance.action_object|link_lookup:'posttitles' %}
+										{{ title.post.post_title }} : 
+									{% endfor %}
+								]
+								</div>
+							{% endif %}
+						</div>	
+						<div class="comments">
+							<form class="comment_form_tool">
+								<input name="{{ instance.action_object.tool_name }}" placeholder="   Add to discussion..." class="comment-input">
+							</form>
+							<div style="display: inline-block; overflow-y: scroll; max-height: 300px; width: 100%;">
+							{% for comment in instance.action_object.tool_comments.all %}
+								<div class="comment">
+									<img src="media/{{ comment.user.userprofile.image }}" class="comment_image"><div class="comment_body"><div class="comment_username">@{{ comment.user.username }}</div> <div class="comment_comment">	{{ comment.comment }}</div></div>
+								</div>
+							{% endfor %}
+							</div>
+						</div>		
+					</div>
+					
+				{% elif instance.verb == 'rerouted_tool' %}
+					<div class="feed-instance">
+						<img style="width: 60px; height: 60px; border-radius: 20%; margin-left: 13px; margin-top: 10px;" src="media/{{ instance.action_object.sub_section.interest.userprofile.image }}">
+						<div class="action_object"><div class="title" href="#">{{ instance.action_object }}</div> -- <span style="font-size: .75em;">{{ instance.action_object.sub_section }}</span></div>
+						<div class="timesince">{{ instance.timesince }}</div>
+						<div class="actor"><a class="user" href="{% url 'userprofile' username=instance.action_object.sub_section.interest.userprofile.user.username %}">{{ instance.action_object.sub_section.interest.userprofile.user.first_name }} {{ instance.action_object.sub_section.interest.userprofile.user.last_name }}</a> ------ <img src="{% static 'vibe/media/image/icons/re-route.png' %}" style="width: 16px; height: 16px; margin-left: 4px; margin-right: 4px; "><span style="font-size: 11px;">  {{ instance.actor.first_name }} {{ instance.actor.last_name }}</span></div>
+						<img class="{{ instance.action_object.sub_section.interest }} feed-icon-left" src="media/image/icons/{{ instance.action_object.sub_section.interest }}-icon.png">
+						<img class="feed-icon-right" src="media/image/icons/tool-outline.png">
+						
+						<div class="interact" >
+						{% if instance.action_object|save_lookup_tool:user %}
+							<img class="save" value="{{ instance.action_object.sub_section.interest.userprofile.user.username }}_{{ instance.action_object }}_{{ instance.action_object.sub_section }}_{{ instance.action_object.sub_section.interest }}_tool" style="float: right; height: 20px; width: 20px; margin-top: 5px;" src="{% static 'vibe/media/image/icons/saved.png' %}">
+						{% else %}
+							<img class="save" value="{{ instance.action_object.sub_section.interest.userprofile.user.username }}_{{ instance.action_object }}_{{ instance.action_object.sub_section }}_{{ instance.action_object.sub_section.interest }}_tool" style="float: right; height: 20px; width: 20px; margin-top: 5px;" src="{% static 'vibe/media/image/icons/save.png' %}">
+						{% endif %}
+							<span class="num_saved"> {{ instance.action_object.num_saved }}</span>
+							<div class="comment_btn">
+							<img style="float: right; width: 20px; height: 20px; margin-top: 5px; margin-right: 8px;" src="{% static 'vibe/media/image/icons/comments.png' %}"><span style="float: right; margin-right: 5px; margin-top: 8px; font-size: 12px; font-style: italic;">  {{ instance.action_object.tool_comments.all.count }}</span>
+							</div>
+							<div class="dropdown">
+								<img class="re-route" data-toggle="dropdown" src="{% static 'vibe/media/image/icons/re-route.png' %}" style="cursor: pointer;"><span class="{{ instance.actor }}_{{ instance.action_object }}_{{ instance.action_object.sub_section }}_{{ instance.action_object.sub_section.interest }}_tool" style="float: right; margin-top: 9px; font-size: 13px; margin-right: 7px;">{{ instance.action_object.num_reroute }}</span>
+
+									<ul class="dropdown-menu" style="position: relative; left: 68%; top: 28px; width: 20px;">
+									{% for sub in instance.action_object|reroute_sub:user %}
+										<li class="reroute_sub" style="font-size: 13px; width: 100%; text-align: center; cursor: pointer;">{{ sub }}</li>
+									{% endfor %}
+									</ul>
+							</div>
+								{% if instance.action_object|link_lookup:'tool' %}
+									<img class="link" src="{% static 'vibe/media/image/icons/link.png' %}" style="width: 17px; height: 17px; margin-top: 6px; margin-right: 8px; position: absolute;">
+									<div class="link_num" style="font-size: 13px; display: inline-block; margin-top: 6px; margin-left: 24px;"> [ {{ instance.action_object|link_lookup:'tool' }} ]</div>
+									<div class="link_verbose">
+									[
+										{% for title in instance.action_object|link_lookup:'posttitles' %}
+											{{ title.post.post_title }} : 
+										{% endfor %}
+									]
+									</div>
+								{% endif %}
+						</div>
+						<div class="comments">
+							<form class="comment_form_tool">
+								<input name="{{ instance.action_object.tool_name }}" placeholder="   Add to discussion..." class="comment-input">
+							</form>
+							<div style="display: inline-block; overflow-y: scroll; max-height: 300px; width: 100%;">
+							{% for comment in instance.action_object.tool_comments.all %}
+								<div class="comment">
+									<img src="media/{{ comment.user.userprofile.image }}" class="comment_image"><div class="comment_body"><div class="comment_username">@{{ comment.user.username }}</div> <div class="comment_comment">	{{ comment.comment }}</div></div>
+								</div>
+							{% endfor %}
+							</div>
+						</div>									
+					</div>	
+				{% endif %}
+
+			{% elif section_feed %}
+
+				{% if instance.action_object.sub_section.interest == section_feed %}
+
+					{% if instance.verb == 'posted-tool' %}
+					<div class="feed-instance">
+						<img style="width: 60px; height: 60px; border-radius: 20%; margin-left: 13px; margin-top: 10px;" src="media/{{ instance.actor.userprofile.image }}">
+						<div class="action_object"><div class="title" href="#">{{ instance.action_object }}</div> -- <span style="font-size: .75em;">{{ instance.action_object.sub_section }}</span></div>
+						<div class="timesince">{{ instance.timesince }}</div>
+						<div class="actor"><a class="user" href="{% url 'userprofile' username=instance.actor %}">{{ instance.actor.first_name }} {{ instance.actor.last_name }}</a></div>
+						<img class="{{ instance.action_object.sub_section.interest }} feed-icon-left" src="media/image/icons/{{ instance.action_object.sub_section.interest }}-icon.png">
+						<img class="feed-icon-right" src="media/image/icons/tool-outline.png">
+						
+						<div class="interact" >
+						{% if instance.action_object|save_lookup_tool:user %}
+							<img class="save" value="{{ instance.actor.username }}_{{ instance.action_object }}_{{ instance.action_object.sub_section }}_{{ instance.action_object.sub_section.interest }}_tool" style="float: right; height: 20px; width: 20px; margin-top: 5px;" src="{% static 'vibe/media/image/icons/saved.png' %}">
+						{% else %}
+							<img class="save" value="{{ instance.actor.username }}_{{ instance.action_object }}_{{ instance.action_object.sub_section }}_{{ instance.action_object.sub_section.interest }}_tool" style="float: right; height: 20px; width: 20px; margin-top: 5px;" src="{% static 'vibe/media/image/icons/save.png' %}">
+						{% endif %}
+							<span class="num_saved"> {{ instance.action_object.num_saved }}</span>
+							<div class="comment_btn">
+								<img style="float: right; width: 20px; height: 20px; margin-top: 5px; margin-right: 8px;" src="{% static 'vibe/media/image/icons/comments.png' %}"><span style="float: right; margin-right: 5px; margin-top: 8px; font-size: 12px; font-style: italic;">  {{ instance.action_object.tool_comments.all.count }}</span>
+							</div>
+							<div class="dropdown">
+								<img class="re-route" data-toggle="dropdown" src="{% static 'vibe/media/image/icons/re-route.png' %}" style="cursor: pointer;"><span class="{{ instance.actor }}_{{ instance.action_object }}_{{ instance.action_object.sub_section }}_{{ instance.action_object.sub_section.interest }}_tool" style="float: right; margin-top: 9px; font-size: 13px; margin-right: 7px;">{{ instance.action_object.num_reroute }}</span>
+
+									<ul class="dropdown-menu" style="position: relative; left: 68%; top: 28px; width: 20px;">
+									{% for sub in instance.action_object|reroute_sub:user %}
+										<li class="reroute_sub" style="font-size: 13px; width: 100%; text-align: center; cursor: pointer;">{{ sub }}</li>
+									{% endfor %}
+									</ul>
+							</div>
+							{% if instance.action_object|link_lookup:'tool' %}
+								<img class="link" src="{% static 'vibe/media/image/icons/link.png' %}" style="width: 17px; height: 17px; margin-top: 6px; margin-right: 8px; position: absolute;">
+								<div class="link_num" style="font-size: 13px; display: inline-block; margin-top: 6px; margin-left: 24px;">
+									 [ {{ instance.action_object|link_lookup:'tool' }} ]
+								</div>
+								<div class="link_verbose">
+								[
+									{% for title in instance.action_object|link_lookup:'posttitles' %}
+										{{ title.post.post_title }} : 
+									{% endfor %}
+								]
+								</div>
+							{% endif %}
+						</div>	
+						<div class="comments">
+							<form class="comment_form_tool">
+								<input name="{{ instance.action_object.tool_name }}" placeholder="   Add to discussion..." class="comment-input">
+							</form>
+							<div style="display: inline-block; overflow-y: scroll; max-height: 300px; width: 100%;">
+							{% for comment in instance.action_object.tool_comments.all %}
+								<div class="comment">
+									<img src="media/{{ comment.user.userprofile.image }}" class="comment_image"><div class="comment_body"><div class="comment_username">@{{ comment.user.username }}</div> <div class="comment_comment">	{{ comment.comment }}</div></div>
+								</div>
+							{% endfor %}
+							</div>
+						</div>
+					</div>
+					
+					{% elif instance.verb == 'posted-post' %}
+						<div class="feed-instance">
+							<img style="width: 60px; height: 60px; border-radius: 20%; margin-left: 13px; margin-top: 10px;" src="media/{{ instance.actor.userprofile.image }}">
+							<div class="action_object"><div class="title" href="#">{{ instance.action_object }}</div> -- <span style="font-size: .75em;">{{ instance.action_object.sub_section }}</span></div>
+							<div class="timesince">{{ instance.timesince }}</div>
+							<div class="actor"><a class="user" href="{% url 'userprofile' username=instance.actor %}">{{ instance.actor.first_name }} {{ instance.actor.last_name }}</a></div>
+							<img class="{{ instance.action_object.sub_section.interest }} feed-icon-left" src="media/image/icons/{{ instance.action_object.sub_section.interest }}-icon.png">
+							<img class="feed-icon-right" src="media/image/icons/post-outline.png">
+							{% if instance.action_object.post_image %}
+								<div class="action_object_content_image"><a href="#image{{ forloop.counter }}" data-toggle='modal' style="outline: none;"><img src="{{ instance.action_object.post_image.url }}" class="content_image"></a></div>
+
+								<div class="modal fade" id="image{{ forloop.counter }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+		  						<div class="modal-dialog modal-lg" role="document">
+		   							<div class="modal-content" style="border-radius: 13px;">
+		      							<div class="modal-body" style="margin: 0; padding: 0; border-radius: 10px;">
+		        							<img src="{{ instance.action_object.post_image.url }}" style="width: 100%; height: 650px; border-radius: 10px;">
+		      							</div>  			
+		    						</div>
+		  						</div>
+							</div>
+
+								<div class="action_object_content_post">{{ instance.action_object.post_content }}</div>
+							{% elif instance.action_object.post_video %}
+								<div class="youtube-player" data-id="{{ instance.action_object.post_video }}"></div>
+								<div class="action_object_content_post">{{ instance.action_object.post_content }}</div>
+							{% elif instance.action_object.post_file %}
+								<object style="margin-top: 12px;" width="100%" height="450px" data="{{ instance.action_object.post_file.url }}"></object>
+							{% else %}
+								<div class="action_object_content">{{ instance.action_object.post_content }}</div>	
+							{% endif %}
+							
+							<div class="interact" >
+							{% if instance.action_object|save_lookup_post:user %}
+								<img class="save" value="{{ instance.actor.username }}_{{ instance.action_object }}_{{ instance.action_object.sub_section }}_{{ instance.action_object.sub_section.interest }}_post" style="float: right; height: 20px; width: 20px; margin-top: 5px;" src="{% static 'vibe/media/image/icons/saved.png' %}">
+							{% else %}
+									<img class="save" value="{{ instance.actor.username }}_{{ instance.action_object }}_{{ instance.action_object.sub_section }}_{{ instance.action_object.sub_section.interest }}_post" style="float: right; height: 20px; width: 20px; margin-top: 5px;" src="{% static 'vibe/media/image/icons/save.png' %}">
+							{% endif %}
+								<span class="num_saved"> {{ instance.action_object.num_saved }}</span>
+								<div class="comment_btn">
+									<img style="float: right; width: 20px; height: 20px; margin-top: 5px; margin-right: 8px;" src="{% static 'vibe/media/image/icons/comments.png' %}"><span style="float: right; margin-right: 5px; margin-top: 8px; font-size: 12px; font-style: italic;">  {{ instance.action_object.post_comments.all.count }}</span>
+								</div>
+								<div class="dropdown">
+								<img class="re-route" data-toggle="dropdown" src="{% static 'vibe/media/image/icons/re-route.png' %}" style="cursor: pointer;"><span class="{{ instance.actor }}_{{ instance.action_object }}_{{ instance.action_object.sub_section }}_{{ instance.action_object.sub_section.interest }}_post" style="float: right; margin-top: 9px; font-size: 13px; margin-right: 7px;">{{ instance.action_object.num_reroute }}</span>
+
+									<ul class="dropdown-menu" style="position: relative; left: 68%; top: 28px; width: 20px;">
+									{% for sub in instance.action_object|reroute_sub:user %}
+										<li class="reroute_sub" style="font-size: 13px; width: 100%; text-align: center; cursor: pointer;">{{ sub }}</li>
+									{% endfor %}
+									</ul>
+							</div>
+								{% if instance.action_object|link_lookup:'post' %}
+									<img class="link" src="{% static 'vibe/media/image/icons/link.png' %}" style="width: 17px; height: 17px; margin-top: 6px; margin-right: 8px; position: absolute;">
+									<div class="link_num" style="font-size: 13px; display: inline-block; margin-top: 6px; margin-left: 24px;">
+										 [ {{ instance.action_object|link_lookup:'post' }} ]
+									</div>
+									<div class="link_verbose">
+									[
+										{% for title in instance.action_object|link_lookup:'toolnames' %}
+											{{ title.tool.tool_name }} : 
+										{% endfor %}
+									]
+									</div>
+								{% endif %}
+							</div>
+							<div class="comments">
+								<form class="comment_form_post">
+									<input name="{{ instance.action_object.post_title }}" placeholder="   Add discussion..." class="comment-input">
+								</form>
+								<div style="display: inline-block; overflow-y: scroll; max-height: 300px; width: 100%;">
+								{% for comment in instance.action_object.post_comments.all %}
+									<div class="comment">
+										<img src="media/{{ comment.user.userprofile.image }}" class="comment_image"><div class="comment_body"><div class="comment_username">@{{ comment.user.username }}</div> <div class="comment_comment">	{{ comment.comment }}</div></div>
+									</div>
+								{% endfor %}
+								</div>
+							</div>											
+							
+						</div>
+						
+					{% elif instance.verb == 'rerouted_post' %}
+						<div class="feed-instance">
+							<img style="width: 60px; height: 60px; border-radius: 20%; margin-left: 13px; margin-top: 10px;" src="media/{{ instance.action_object.sub_section.interest.userprofile.image }}">
+							<div class="action_object"><div class="title" href="#">{{ instance.action_object }}</div> -- <span style="font-size: .75em;">{{ instance.action_object.sub_section }}</span></div>
+							<div class="timesince">{{ instance.timesince }}</div>
+							<div class="actor"><a class="user" href="{% url 'userprofile' username=instance.action_object.sub_section.interest.userprofile.user.username %}">{{ instance.action_object.sub_section.interest.userprofile.user.first_name }} {{ instance.action_object.sub_section.interest.userprofile.user.last_name }}</a> ------ <img src="{% static 'vibe/media/image/icons/re-route.png' %}" style="width: 16px; height: 16px; margin-left: 4px; margin-right: 4px;"><span style="font-size: 11px;">  {{ instance.actor.first_name }} {{ instance.actor.last_name }}</span></div>
+							<img class="{{ instance.action_object.sub_section.interest }} feed-icon-left" src="media/image/icons/{{ instance.action_object.sub_section.interest }}-icon.png">
+							<img class="feed-icon-right" src="media/image/icons/post-outline.png">
+							{% if instance.action_object.post_image %}
+								<div class="action_object_content_image"><a href="#image{{ forloop.counter }}" data-toggle='modal' style="outline: none;"><img src="{{ instance.action_object.post_image.url }}" class="content_image"></a></div>
+
+								<div class="modal fade" id="image{{ forloop.counter }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+			  						<div class="modal-dialog modal-lg" role="document">
+			   							<div class="modal-content" style="border-radius: 13px;">
+			      							<div class="modal-body" style="margin: 0; padding: 0; border-radius: 10px;">
+			        							<img src="{{ instance.action_object.post_image.url }}" style="width: 100%; height: 650px; border-radius: 10px;">
+			      							</div>  			
+			    						</div>
+			  						</div>
+								</div>
+							
+								<div class="action_object_content_post">{{ instance.action_object.post_content }}</div>
+							
+							{% elif instance.action_object.post_video %}
+								<div class="youtube-player" data-id="{{ instance.action_object.post_video }}"></div>
+								<div class="action_object_content_post">{{ instance.action_object.post_content }}</div>
+							{% elif instance.action_object.post_file %}
+								<object style="margin-top: 12px;" width="100%" height="450px" data="{{ instance.action_object.post_file.url }}"></object>
+							{% else %}
+								<div class="action_object_content">{{ instance.action_object.post_content }}</div>	
+							{% endif %}
+							<div class="interact" >
+								{% if instance.action_object|save_lookup_post:user %}
+									<img class="save" value="{{ instance.action_object.sub_section.interest.userprofile.user.username }}_{{ instance.action_object }}_{{ instance.action_object.sub_section }}_{{ instance.action_object.sub_section.interest }}_post" style="float: right; height: 20px; width: 20px; margin-top: 5px;" src="{% static 'vibe/media/image/icons/saved.png' %}">
+								{% else %}
+									<img class="save" value="{{ instance.action_object.sub_section.interest.userprofile.user.username }}_{{ instance.action_object }}_{{ instance.action_object.sub_section }}_{{ instance.action_object.sub_section.interest }}_post" style="float: right; height: 20px; width: 20px; margin-top: 5px;" src="{% static 'vibe/media/image/icons/save.png' %}">
+								{% endif %}
+									<span class="num_saved">{{ instance.action_object.num_saved }}</span>
+								
+								
+								<div class="comment_btn">
+									<img style="float: right; width: 20px; height: 20px; margin-top: 5px; margin-right: 8px;" src="{% static 'vibe/media/image/icons/comments.png' %}"><span style="float: right; margin-right: 7px; margin-top: 8px; font-size: 12px; font-style: italic;">  {{ instance.action_object.post_comments.all.count }}</span>
+								</div>
+								<div class="dropdown">
+								<img class="re-route" data-toggle="dropdown" src="{% static 'vibe/media/image/icons/re-route.png' %}" style="cursor: pointer;"><span class="{{ instance.actor }}_{{ instance.action_object }}_{{ instance.action_object.sub_section }}_{{ instance.action_object.sub_section.interest }}_post" style="float: right; margin-top: 9px; font-size: 13px; margin-right: 7px;">{{ instance.action_object.num_reroute }}</span>
+
+									<ul class="dropdown-menu" style="position: relative; left: 68%; top: 28px; width: 20px;">
+									{% for sub in instance.action_object|reroute_sub:user %}
+										<li class="reroute_sub" style="font-size: 13px; width: 100%; text-align: center; cursor: pointer;">{{ sub }}</li>
+									{% endfor %}
+									</ul>
+							</div>
+								{% if instance.action_object|link_lookup:'post' %}
+									<img class="link" src="{% static 'vibe/media/image/icons/link.png' %}" style="width: 17px; height: 17px; margin-top: 6px; margin-right: 8px; position: absolute;">
+									<div class="link_num" style="font-size: 13px; display: inline-block; margin-top: 6px; margin-left: 24px;">
+										 [ {{ instance.action_object|link_lookup:'post' }} ]
+									</div>
+									<div class="link_verbose">
+									[
+										{% for title in instance.action_object|link_lookup:'toolnames' %}
+											{{ title.tool.tool_name }} : 
+										{% endfor %}
+									]
+									</div>
+								{% endif %}
+							</div>								
+							<div class="comments">
+								<form class="comment_form_post">
+									<input name="{{ instance.action_object.post_title }}" placeholder="   Add discussion..." class="comment-input">
+								</form>
+								<div style="display: inline-block; overflow-y: scroll; max-height: 300px; width: 100%;">
+								{% for comment in instance.action_object.post_comments.all %}
+									<div class="comment">
+										<img src="media/{{ comment.user.userprofile.image }}" class="comment_image"><div class="comment_body"><div class="comment_username">@{{ comment.user.username }}</div> <div class="comment_comment">	{{ comment.comment }}</div></div>
+									</div>
+								{% endfor %}
+								</div>
+							</div>
+						</div>
+
+					{% elif instance.verb == 'rerouted_tool' %}
+						<div class="feed-instance">
+							<img style="width: 60px; height: 60px; border-radius: 20%; margin-left: 13px; margin-top: 10px;" src="media/{{ instance.action_object.sub_section.interest.userprofile.image }}">
+							<div class="action_object"><div class="title" href="#">{{ instance.action_object }}</div> -- <span style="font-size: .75em;">{{ instance.action_object.sub_section }}</span></div>
+							<div class="timesince">{{ instance.timesince }}</div>
+							<div class="actor"><a class="user" href="{% url 'userprofile' username=instance.action_object.sub_section.interest.userprofile.user.username %}">{{ instance.action_object.sub_section.interest.userprofile.user.first_name }} {{ instance.action_object.sub_section.interest.userprofile.user.last_name }}</a> ------ <img src="{% static 'vibe/media/image/icons/re-route.png' %}" style="width: 16px; height: 16px; margin-left: 4px; margin-right: 4px; "><span style="font-size: 11px;">  {{ instance.actor.first_name }} {{ instance.actor.last_name }}</span></div>
+							<img class="{{ instance.action_object.sub_section.interest }} feed-icon-left" src="media/image/icons/{{ instance.action_object.sub_section.interest }}-icon.png">
+							<img class="feed-icon-right" src="media/image/icons/tool-outline.png">
+							
+							<div class="interact" >
+							{% if instance.action_object|save_lookup_tool:user %}
+								<img class="save" value="{{ instance.action_object.sub_section.interest.userprofile.user.username }}_{{ instance.action_object }}_{{ instance.action_object.sub_section }}_{{ instance.action_object.sub_section.interest }}_tool" style="float: right; height: 20px; width: 20px; margin-top: 5px;" src="{% static 'vibe/media/image/icons/saved.png' %}">
+							{% else %}
+								<img class="save" value="{{ instance.action_object.sub_section.interest.userprofile.user.username }}_{{ instance.action_object }}_{{ instance.action_object.sub_section }}_{{ instance.action_object.sub_section.interest }}_tool" style="float: right; height: 20px; width: 20px; margin-top: 5px;" src="{% static 'vibe/media/image/icons/save.png' %}">
+							{% endif %}
+								<span class="num_saved"> {{ instance.action_object.num_saved }}</span>
+								<div class="comment_btn">
+								<img style="float: right; width: 20px; height: 20px; margin-top: 5px; margin-right: 8px;" src="{% static 'vibe/media/image/icons/comments.png' %}"><span style="float: right; margin-right: 5px; margin-top: 8px; font-size: 12px; font-style: italic;">  {{ instance.action_object.tool_comments.all.count }}</span>
+								</div>
+								<div class="dropdown">
+								<img class="re-route" data-toggle="dropdown" src="{% static 'vibe/media/image/icons/re-route.png' %}" style="cursor: pointer;"><span class="{{ instance.actor }}_{{ instance.action_object }}_{{ instance.action_object.sub_section }}_{{ instance.action_object.sub_section.interest }}_tool" style="float: right; margin-top: 9px; font-size: 13px; margin-right: 7px;">{{ instance.action_object.num_reroute }}</span>
+
+									<ul class="dropdown-menu" style="position: relative; left: 68%; top: 28px; width: 20px;">
+									{% for sub in instance.action_object|reroute_sub:user %}
+										<li class="reroute_sub" style="font-size: 13px; width: 100%; text-align: center; cursor: pointer;">{{ sub }}</li>
+									{% endfor %}
+									</ul>
+							</div>
+									{% if instance.action_object|link_lookup:'tool' %}
+										<img class="link" src="{% static 'vibe/media/image/icons/link.png' %}" style="width: 17px; height: 17px; margin-top: 6px; margin-right: 8px; position: absolute;">
+										<div class="link_num" style="font-size: 13px; display: inline-block; margin-top: 6px; margin-left: 24px;"> [ {{ instance.action_object|link_lookup:'tool' }} ]</div>
+										<div class="link_verbose">
+										[
+											{% for title in instance.action_object|link_lookup:'posttitles' %}
+												{{ title.post.post_title }} : 
+											{% endfor %}
+										]
+										</div>
+									{% endif %}
+							</div>
+							<div class="comments">
+								<form class="comment_form_tool">
+									<input name="{{ instance.action_object.tool_name }}" placeholder="   Add to discussion..." class="comment-input">
+								</form>
+								<div style="display: inline-block; overflow-y: scroll; max-height: 300px; width: 100%;">
+								{% for comment in instance.action_object.tool_comments.all %}
+									<div class="comment">
+										<img src="media/{{ comment.user.userprofile.image }}" class="comment_image"><div class="comment_body"><div class="comment_username">@{{ comment.user.username }}</div> <div class="comment_comment">	{{ comment.comment }}</div></div>
+									</div>
+								{% endfor %}
+								</div>
+							</div>									
+						</div>
+					{% endif %}
+
+				{% endif %}
+
+			{% else %}
+				{% if instance.verb == 'posted-tool' %}
+					<div class="feed-instance">
+						<img style="width: 60px; height: 60px; border-radius: 20%; margin-left: 13px; margin-top: 10px;" src="media/{{ instance.actor.userprofile.image }}">
+						<div class="action_object"><div class="title" href="#">{{ instance.action_object }}</div> -- <span style="font-size: .75em;">{{ instance.action_object.sub_section }}</span></div>
+						<div class="timesince">{{ instance.timesince }}</div>
+						<div class="actor"><a class="user" href="{% url 'userprofile' username=instance.actor %}">{{ instance.actor.first_name }} {{ instance.actor.last_name }}</a></div>
+						<img class="{{ instance.action_object.sub_section.interest }} feed-icon-left" src="media/image/icons/{{ instance.action_object.sub_section.interest }}-icon.png">
+						<img class="feed-icon-right" src="media/image/icons/tool-outline.png">
+						
+						<div class="interact" >
+						{% if instance.action_object|save_lookup_tool:user %}
+							<img class="save" value="{{ instance.actor.username }}_{{ instance.action_object }}_{{ instance.action_object.sub_section }}_{{ instance.action_object.sub_section.interest }}_tool" style="float: right; height: 20px; width: 20px; margin-top: 5px;" src="{% static 'vibe/media/image/icons/saved.png' %}">
+						{% else %}
+							<img class="save" value="{{ instance.actor.username }}_{{ instance.action_object }}_{{ instance.action_object.sub_section }}_{{ instance.action_object.sub_section.interest }}_tool" style="float: right; height: 20px; width: 20px; margin-top: 5px;" src="{% static 'vibe/media/image/icons/save.png' %}">
+						{% endif %}
+							<span class="num_saved"> {{ instance.action_object.num_saved }}</span>
+							<div class="comment_btn">
+							<img style="float: right; width: 20px; height: 20px; margin-top: 5px; margin-right: 8px;" src="{% static 'vibe/media/image/icons/comments.png' %}"><span style="float: right; margin-right: 5px; margin-top: 8px; font-size: 12px; font-style: italic;">  {{ instance.action_object.tool_comments.all.count }}</span>
+							</div>
+							<div class="dropdown">
+								<img class="re-route" data-toggle="dropdown" src="{% static 'vibe/media/image/icons/re-route.png' %}" style="cursor: pointer;"><span class="{{ instance.actor }}_{{ instance.action_object }}_{{ instance.action_object.sub_section }}_{{ instance.action_object.sub_section.interest }}_tool" style="float: right; margin-top: 9px; font-size: 13px; margin-right: 7px;">{{ instance.action_object.num_reroute }}</span>
+
+									<ul class="dropdown-menu" style="position: relative; left: 68%; top: 28px; width: 20px;">
+									{% for sub in instance.action_object|reroute_sub:user %}
+										<li class="reroute_sub" style="font-size: 13px; width: 100%; text-align: center; cursor: pointer;">{{ sub }}</li>
+									{% endfor %}
+									</ul>
+							</div>
+								{% if instance.action_object|link_lookup:'tool' %}
+									<img class="link" src="{% static 'vibe/media/image/icons/link.png' %}" style="width: 17px; height: 17px; margin-top: 6px; margin-right: 8px; position: absolute;">
+									<div class="link_num" style="font-size: 13px; display: inline-block; margin-top: 6px; margin-left: 24px;"> [ {{ instance.action_object|link_lookup:'tool' }} ]</div>
+									<div class="link_verbose">
+									[
+										{% for title in instance.action_object|link_lookup:'posttitles' %}
+											{{ title.post.post_title }} : 
+										{% endfor %}
+									]
+									</div>
+								{% endif %}
+						</div>
+						<div class="comments">
+							<form class="comment_form_tool">
+								<input name="{{ instance.action_object.tool_name }}" placeholder="   Add discussion..." class="comment-input">
+							</form>
+							<div style="display: inline-block; overflow-y: scroll; max-height: 300px; width: 100%;">
+							{% for comment in instance.action_object.tool_comments.all %}
+								<div class="comment">
+									<img src="media/{{ comment.user.userprofile.image }}" class="comment_image"><div class="comment_body"><div class="comment_username">@{{ comment.user.username }}</div> <div class="comment_comment">	{{ comment.comment }}</div></div>
+								</div>
+							{% endfor %}
+							</div>
+						</div>									
+					</div>
+					
+				{% elif instance.verb == 'posted-post' %}
+					{% if instance.action_object|relate_lookup:'title' %}
+
+<!-- ========================================================================================== Main Related Post -->
+
+					<div class="relate_main feed-instance">
+						<img style="width: 60px; height: 60px; border-radius: 20%; margin-left: 13px; margin-top: 10px;" src="media/{{ instance.action_object|relate_lookup:'img' }}">
+						<div class="action_object">{{ instance.action_object|relate_lookup:'title' }} -- <span style="font-size: .75em;">{{ instance.action_object|relate_lookup:'sub' }}</span></div>
+						<div class="timesince">timesince</div>
+						<div class="actor"><a class="user" href="{% url 'userprofile' username=instance.actor %}">{{ instance.action_object|relate_lookup:'full_name' }}</a></div>
+						<img class="{{ instance.action_object.sub_section.interest }} feed-icon-left" src="media/image/icons/{{ instance.action_object.sub_section.interest }}-icon.png">
+						<img class="feed-icon-right" src="media/image/icons/post-outline.png">
+						{% if instance.action_object|relate_lookup:'post_image' %}
+							<div class="action_object_content_image"><a href="#image-main{{ forloop.counter }}" data-toggle='modal' style="outline: none;"><img src="{{ instance.action_object|relate_lookup:'post_image' }}" class="content_image"></a></div>
+
+							<div class="modal fade" id="image-main{{ forloop.counter }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+		  						<div class="modal-dialog modal-lg" role="document">
+		   							<div class="modal-content" style="border-radius: 13px;">
+		      							<div class="modal-body" style="margin: 0; padding: 0; border-radius: 10px;">
+		        							<img src="{{ instance.action_object|relate_lookup:'post_image' }}" style="width: 100%; height: 650px; border-radius: 10px;">
+		      							</div>  			
+		    						</div>
+		  						</div>
+							</div>
+						
+							<div class="action_object_content_post">{{ instance.action_object|relate_lookup:'post_content' }}</div>
+						
+						{% elif instance.action_object|relate_lookup:'post_video' %}
+							<div class="youtube-player" data-id="{{ instance.action_object|relate_lookup:'post_video' }}"></div>
+							<div class="action_object_content_post">{{ instance.action_object|relate_lookup:'post_content' }}</div>
+						{% elif instance.action_object|relate_lookup:'post_file' %}
+							<object style="margin-top: 12px;" width="100%" height="450px" data="{{ instance.action_object|relate_lookup:'post_file' }}"></object>
+						{% else %}
+							<div class="action_object_content">{{ instance.action_object|relate_lookup:'post_content' }}</div>	
+						{% endif %}
+						<div class="interact" >
+							{% if instance.action_object|relate_lookup:'post'|save_lookup_post:user %}
+								<img class="save" value="{{ instance.action_object|relate_lookup:'username' }}_{{ instance.action_object|relate_lookup:'title' }}_{{ instance.action_object|relate_lookup:'sub' }}_{{ instance.action_object.sub_section.interest }}_post" style="float: right; height: 20px; width: 20px; margin-top: 5px;" src="{% static 'vibe/media/image/icons/saved.png' %}">
+							{% else %}
+								<img class="save" value="{{ instance.action_object|relate_lookup:'username' }}_{{ instance.action_object|relate_lookup:'title' }}_{{ instance.action_object|relate_lookup:'sub' }}_{{ instance.action_object.sub_section.interest }}_post" style="float: right; height: 20px; width: 20px; margin-top: 5px;" src="{% static 'vibe/media/image/icons/save.png' %}">
+							{% endif %}
+								<span class="num_saved">{{ instance.action_object|relate_lookup:'num_saved' }}</span>
+							
+							
+							<div class="comment_btn">
+								<img style="float: right; width: 20px; height: 20px; margin-top: 5px; margin-right: 8px;" src="{% static 'vibe/media/image/icons/comments.png' %}"><span style="float: right; margin-right: 7px; margin-top: 8px; font-size: 12px; font-style: italic;">  {{ instance.action_object|relate_lookup:'comments_len' }}</span>
+							</div>
+							<div class="dropdown">
+								<img class="re-route" data-toggle="dropdown" src="{% static 'vibe/media/image/icons/re-route.png' %}" style="cursor: pointer;"><span class="{{ instance.action_object|relate_lookup:'username' }}_{{ instance.action_object|relate_lookup:'title' }}_{{ instance.action_object|relate_lookup:'sub' }}_{{ instance.action_object.sub_section.interest }}_post" style="float: right; margin-top: 9px; font-size: 13px; margin-right: 7px;">{{ instance.action_object|relate_lookup:'num_reroute' }}</span>
+
+									<ul class="dropdown-menu" style="position: relative; left: 68%; top: 28px; width: 20px;">
+									{% for sub in instance.action_object|reroute_sub:user %}
+										<li class="reroute_sub" style="font-size: 13px; width: 100%; text-align: center; cursor: pointer;">{{ sub }}</li>
+									{% endfor %}
+									</ul>
+							</div>
+							<!-- {% if instance.action_object|link_lookup:'post' %}
+								<img class="link" src="{% static 'vibe/media/image/icons/link.png' %}" style="width: 17px; height: 17px; margin-top: 6px; margin-right: 8px; position: absolute;">
+								<div class="link_num" style="font-size: 13px; display: inline-block; margin-top: 6px; margin-left: 24px;">
+									 [ {{ instance.action_object|link_lookup:'post' }} ]
+								</div>
+								<div class="link_verbose">
+								[
+									{% for title in instance.action_object|link_lookup:'toolnames' %}
+										{{ title.tool.tool_name }} : 
+									{% endfor %}
+								]
+								</div>
+							{% endif %} -->
+						</div>								
+						<div class="comments">
+							<form class="comment_form_post">
+								<input name="{{ instance.action_object|relate_lookup:'title' }}" placeholder="   Add to discussion..." class="comment-input">
+							</form>
+							<div style="display: inline-block; overflow-y: scroll; max-height: 300px; width: 100%;">
+							{% for comment in instance.action_object|relate_lookup:'comments' %}
+								<div class="comment">
+									<img src="media/{{ comment.user.userprofile.image }}" class="comment_image"><div class="comment_body"><div class="comment_username">@{{ comment.user.username }}</div> <div class="comment_comment">	{{ comment.comment }}</div></div>
+								</div>
+							{% endfor %}
+							</div>
+						</div>
+					</div>
+					{% if instance.action_object|relate_lookup:'num_relates' %}
+					<div style="width: 9px; height: 9px; border-radius: 100%; position: relative; left: 49%; background-color: white; margin-bottom: 5px;">
+						
+					</div>
+					<div style="width: 9px; height: 9px; border-radius: 100%; position: relative; left: 49%; background-color: white; margin-bottom: 5px;">
+						
+					</div>
+					<div style="width: 9px; height: 9px; border-radius: 100%; position: relative; left: 49%; background-color: white; margin-bottom: 5px;">
+						
+					</div>
+					{% else %}
+					<div style="width: 9px; height: 50px; border-radius: 5px; position: relative; left: 49%; background-color: white; margin-bottom: 5px;">
+						
+					</div>
+					{% endif %}
+					{% endif %}
+
+<!-- ========================================================================================== Main Related Post -->
+
+					<div class="feed-instance">
+						<img style="width: 60px; height: 60px; border-radius: 20%; margin-left: 13px; margin-top: 10px;" src="media/{{ instance.actor.userprofile.image }}">
+						<div class="action_object"><div class="title" href="#">{{ instance.action_object }}</div> -- <span style="font-size: .75em;">{{ instance.action_object.sub_section }}</span></div>
+						<div class="timesince">{{ instance.timesince }}</div>
+						<div class="actor"><a class="user" href="{% url 'userprofile' username=instance.actor %}">{{ instance.actor.first_name }} {{ instance.actor.last_name }}</a></div>
+						<img class="{{ instance.action_object.sub_section.interest }} feed-icon-left" src="media/image/icons/{{ instance.action_object.sub_section.interest }}-icon.png">
+						<img class="feed-icon-right" src="media/image/icons/post-outline.png">
+						{% if instance.action_object.post_image %}
+							<div class="action_object_content_image"><a href="#image{{ forloop.counter }}" data-toggle='modal' style="outline: none;"><img src="{{ instance.action_object.post_image.url }}" class="content_image"></a></div>
+
+							<div class="modal fade" id="image{{ forloop.counter }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+		  						<div class="modal-dialog modal-lg" role="document">
+		   							<div class="modal-content" style="border-radius: 13px;">
+		      							<div class="modal-body" style="margin: 0; padding: 0; border-radius: 10px;">
+		        							<img src="{{ instance.action_object.post_image.url }}" style="width: 100%; height: 650px; border-radius: 10px;">
+		      							</div>  			
+		    						</div>
+		  						</div>
+							</div>
+						
+							<div class="action_object_content_post">{{ instance.action_object.post_content }}</div>
+						
+						{% elif instance.action_object.post_video %}
+							<div class="youtube-player" data-id="{{ instance.action_object.post_video }}"></div>
+							<div class="action_object_content_post">{{ instance.action_object.post_content }}</div>
+						{% elif instance.action_object.post_file %}
+							<object style="margin-top: 12px;" width="100%" height="450px" data="{{ instance.action_object.post_file.url }}"></object>
+						{% else %}
+							<div class="action_object_content">{{ instance.action_object.post_content }}</div>	
+						{% endif %}
+						<div class="interact" >
+							{% if instance.action_object|save_lookup_post:user %}
+								<img class="save" value="{{ instance.actor.username }}_{{ instance.action_object }}_{{ instance.action_object.sub_section }}_{{ instance.action_object.sub_section.interest }}_post" style="float: right; height: 20px; width: 20px; margin-top: 5px;" src="{% static 'vibe/media/image/icons/saved.png' %}">
+							{% else %}
+								<img class="save" value="{{ instance.actor.username }}_{{ instance.action_object }}_{{ instance.action_object.sub_section }}_{{ instance.action_object.sub_section.interest }}_post" style="float: right; height: 20px; width: 20px; margin-top: 5px;" src="{% static 'vibe/media/image/icons/save.png' %}">
+							{% endif %}
+								<span class="num_saved">{{ instance.action_object.num_saved }}</span>
+							
+							
+							<div class="comment_btn">
+								<img style="float: right; width: 20px; height: 20px; margin-top: 5px; margin-right: 8px;" src="{% static 'vibe/media/image/icons/comments.png' %}"><span style="float: right; margin-right: 7px; margin-top: 8px; font-size: 12px; font-style: italic;">  {{ instance.action_object.post_comments.all.count }}</span>
+							</div>
+							<div class="dropdown">
+								<img class="re-route" data-toggle="dropdown" src="{% static 'vibe/media/image/icons/re-route.png' %}" style="cursor: pointer;"><span class="{{ instance.actor }}_{{ instance.action_object }}_{{ instance.action_object.sub_section }}_{{ instance.action_object.sub_section.interest }}_post" style="float: right; margin-top: 9px; font-size: 13px; margin-right: 7px;">{{ instance.action_object.num_reroute }}</span>
+
+									<ul class="dropdown-menu" style="position: relative; left: 68%; top: 28px; width: 20px;">
+									{% for sub in instance.action_object|reroute_sub:user %}
+										<li class="reroute_sub" style="font-size: 13px; width: 100%; text-align: center; cursor: pointer;">{{ sub }}</li>
+									{% endfor %}
+									</ul>
+							</div>
+							{% if instance.action_object|link_lookup:'post' %}
+								<img class="link" src="{% static 'vibe/media/image/icons/link.png' %}" style="width: 17px; height: 17px; margin-top: 6px; margin-right: 8px; position: absolute;">
+								<div class="link_num" style="font-size: 13px; display: inline-block; margin-top: 6px; margin-left: 24px;">
+									 [ {{ instance.action_object|link_lookup:'post' }} ]
+								</div>
+								<div class="link_verbose">
+								[
+									{% for title in instance.action_object|link_lookup:'toolnames' %}
+										{{ title.tool.tool_name }} : 
+									{% endfor %}
+								]
+								</div>
+							{% endif %}
+						</div>								
+						<div class="comments">
+							<form class="comment_form_post">
+								<input name="{{ instance.action_object.post_title }}" placeholder="   Add to discussion..." class="comment-input">
+							</form>
+							<div style="display: inline-block; overflow-y: scroll; max-height: 300px; width: 100%;">
+							{% for comment in instance.action_object.post_comments.all %}
+								<div class="comment">
+									<img src="media/{{ comment.user.userprofile.image }}" class="comment_image"><div class="comment_body"><div class="comment_username">@{{ comment.user.username }}</div> <div class="comment_comment">	{{ comment.comment }}</div></div>
+								</div>
+							{% endfor %}
+							</div>
+						</div>
+					</div>
+				{% elif instance.verb == 'rerouted_post' %}
+					<div class="feed-instance">
+						<img style="width: 60px; height: 60px; border-radius: 20%; margin-left: 13px; margin-top: 10px;" src="media/{{ instance.action_object.sub_section.interest.userprofile.image }}">
+						<div class="action_object"><div class="title" href="#">{{ instance.action_object }}</div> -- <span style="font-size: .75em;">{{ instance.action_object.sub_section }}</span></div>
+						<div class="timesince">{{ instance.timesince }}</div>
+						<div class="actor"><a class="user" href="{% url 'userprofile' username=instance.action_object.sub_section.interest.userprofile.user.username %}">{{ instance.action_object.sub_section.interest.userprofile.user.first_name }} {{ instance.action_object.sub_section.interest.userprofile.user.last_name }}</a> ------ <img src="{% static 'vibe/media/image/icons/re-route.png' %}" style="width: 16px; height: 16px; margin-left: 4px; margin-right: 4px;"><span style="font-size: 11px;">  {{ instance.actor.first_name }} {{ instance.actor.last_name }}</span></div>
+						<img class="{{ instance.action_object.sub_section.interest }} feed-icon-left" src="media/image/icons/{{ instance.action_object.sub_section.interest }}-icon.png">
+						<img class="feed-icon-right" src="media/image/icons/post-outline.png">
+						{% if instance.action_object.post_image %}
+							<div class="action_object_content_image"><a href="#image{{ forloop.counter }}" data-toggle='modal' style="outline: none;"><img src="{{ instance.action_object.post_image.url }}" class="content_image"></a></div>
+
+							<div class="modal fade" id="image{{ forloop.counter }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+		  						<div class="modal-dialog modal-lg" role="document">
+		   							<div class="modal-content" style="border-radius: 13px;">
+		      							<div class="modal-body" style="margin: 0; padding: 0; border-radius: 10px;">
+		        							<img src="{{ instance.action_object.post_image.url }}" style="width: 100%; height: 650px; border-radius: 10px;">
+		      							</div>  			
+		    						</div>
+		  						</div>
+							</div>
+						
+							<div class="action_object_content_post">{{ instance.action_object.post_content }}</div>
+						
+						{% elif instance.action_object.post_video %}
+							<div class="youtube-player" data-id="{{ instance.action_object.post_video }}"></div>
+							<div class="action_object_content_post">{{ instance.action_object.post_content }}</div>
+						{% elif instance.action_object.post_file %}
+							<object style="margin-top: 12px;" width="100%" height="450px" data="{{ instance.action_object.post_file.url }}"></object>
+						{% else %}
+							<div class="action_object_content">{{ instance.action_object.post_content }}</div>	
+						{% endif %}
+						<div class="interact" >
+							{% if instance.action_object|save_lookup_post:user %}
+								<img class="save" value="{{ instance.action_object.sub_section.interest.userprofile.user.username }}_{{ instance.action_object }}_{{ instance.action_object.sub_section }}_{{ instance.action_object.sub_section.interest }}_post" style="float: right; height: 20px; width: 20px; margin-top: 5px;" src="{% static 'vibe/media/image/icons/saved.png' %}">
+							{% else %}
+								<img class="save" value="{{ instance.action_object.sub_section.interest.userprofile.user.username }}_{{ instance.action_object }}_{{ instance.action_object.sub_section }}_{{ instance.action_object.sub_section.interest }}_post" style="float: right; height: 20px; width: 20px; margin-top: 5px;" src="{% static 'vibe/media/image/icons/save.png' %}">
+							{% endif %}
+								<span class="num_saved">{{ instance.action_object.num_saved }}</span>
+							
+							
+							<div class="comment_btn">
+								<img style="float: right; width: 20px; height: 20px; margin-top: 5px; margin-right: 8px;" src="{% static 'vibe/media/image/icons/comments.png' %}"><span style="float: right; margin-right: 7px; margin-top: 8px; font-size: 12px; font-style: italic;">  {{ instance.action_object.post_comments.all.count }}</span>
+							</div>
+							<div class="dropdown">
+								<img class="re-route" data-toggle="dropdown" src="{% static 'vibe/media/image/icons/re-route.png' %}" style="cursor: pointer;"><span class="{{ instance.actor }}_{{ instance.action_object }}_{{ instance.action_object.sub_section }}_{{ instance.action_object.sub_section.interest }}_post" style="float: right; margin-top: 9px; font-size: 13px; margin-right: 7px;">{{ instance.action_object.num_reroute }}</span>
+
+									<ul class="dropdown-menu" style="position: relative; left: 68%; top: 28px; width: 20px;">
+									{% for sub in instance.action_object|reroute_sub:user %}
+										<li class="reroute_sub" style="font-size: 13px; width: 100%; text-align: center; cursor: pointer;">{{ sub }}</li>
+									{% endfor %}
+									</ul>
+							</div>
+							{% if instance.action_object|link_lookup:'post' %}
+								<img class="link" src="{% static 'vibe/media/image/icons/link.png' %}" style="width: 17px; height: 17px; margin-top: 6px; margin-right: 8px; position: absolute;">
+								<div class="link_num" style="font-size: 13px; display: inline-block; margin-top: 6px; margin-left: 24px;">
+									 [ {{ instance.action_object|link_lookup:'post' }} ]
+								</div>
+								<div class="link_verbose">
+								[
+									{% for title in instance.action_object|link_lookup:'toolnames' %}
+										{{ title.tool.tool_name }} : 
+									{% endfor %}
+								]
+								</div>
+							{% endif %}
+						</div>								
+						<div class="comments">
+							<form class="comment_form_post">
+								<input name="{{ instance.action_object.post_title }}" placeholder="   Add discussion..." class="comment-input">
+							</form>
+							<div style="display: inline-block; overflow-y: scroll; max-height: 300px; width: 100%;">
+							{% for comment in instance.action_object.post_comments.all %}
+								<div class="comment">
+									<img src="media/{{ comment.user.userprofile.image }}" class="comment_image"><div class="comment_body"><div class="comment_username">@{{ comment.user.username }}</div> <div class="comment_comment">	{{ comment.comment }}</div></div>
+								</div>
+							{% endfor %}
+							</div>
+						</div>
+					</div>
+				{% elif instance.verb == 'rerouted_tool' %}
+					<div class="feed-instance">
+						<img style="width: 60px; height: 60px; border-radius: 20%; margin-left: 13px; margin-top: 10px;" src="media/{{ instance.action_object.sub_section.interest.userprofile.image }}">
+						<div class="action_object"><div class="title" href="#">{{ instance.action_object }}</div> -- <span style="font-size: .75em;">{{ instance.action_object.sub_section }}</span></div>
+						<div class="timesince">{{ instance.timesince }}</div>
+						<div class="actor"><a class="user" href="{% url 'userprofile' username=instance.action_object.sub_section.interest.userprofile.user.username %}">{{ instance.action_object.sub_section.interest.userprofile.user.first_name }} {{ instance.action_object.sub_section.interest.userprofile.user.last_name }}</a> ------ <img src="{% static 'vibe/media/image/icons/re-route.png' %}" style="width: 16px; height: 16px; margin-left: 4px; margin-right: 4px; "><span style="font-size: 11px;">  {{ instance.actor.first_name }} {{ instance.actor.last_name }}</span></div>
+						<img class="{{ instance.action_object.sub_section.interest }} feed-icon-left" src="media/image/icons/{{ instance.action_object.sub_section.interest }}-icon.png">
+						<img class="feed-icon-right" src="media/image/icons/tool-outline.png">
+						
+						<div class="interact" >
+						{% if instance.action_object|save_lookup_tool:user %}
+							<img class="save" value="{{ instance.action_object.sub_section.interest.userprofile.user.username }}_{{ instance.action_object }}_{{ instance.action_object.sub_section }}_{{ instance.action_object.sub_section.interest }}_tool" style="float: right; height: 20px; width: 20px; margin-top: 5px;" src="{% static 'vibe/media/image/icons/saved.png' %}">
+						{% else %}
+							<img class="save" value="{{ instance.action_object.sub_section.interest.userprofile.user.username }}_{{ instance.action_object }}_{{ instance.action_object.sub_section }}_{{ instance.action_object.sub_section.interest }}_tool" style="float: right; height: 20px; width: 20px; margin-top: 5px;" src="{% static 'vibe/media/image/icons/save.png' %}">
+						{% endif %}
+							<span class="num_saved"> {{ instance.action_object.num_saved }}</span>
+							<div class="comment_btn">
+							<img style="float: right; width: 20px; height: 20px; margin-top: 5px; margin-right: 8px;" src="{% static 'vibe/media/image/icons/comments.png' %}"><span style="float: right; margin-right: 5px; margin-top: 8px; font-size: 12px; font-style: italic;">  {{ instance.action_object.tool_comments.all.count }}</span>
+							</div>
+							<div class="dropdown">
+								<img class="re-route" data-toggle="dropdown" src="{% static 'vibe/media/image/icons/re-route.png' %}" style="cursor: pointer;"><span class="{{ instance.actor }}_{{ instance.action_object }}_{{ instance.action_object.sub_section }}_{{ instance.action_object.sub_section.interest }}_tool" style="float: right; margin-top: 9px; font-size: 13px; margin-right: 7px;">{{ instance.action_object.num_reroute }}</span>
+
+									<ul class="dropdown-menu" style="position: relative; left: 68%; top: 28px; width: 20px;">
+									{% for sub in instance.action_object|reroute_sub:user %}
+										<li class="reroute_sub" style="font-size: 13px; width: 100%; text-align: center; cursor: pointer;">{{ sub }}</li>
+									{% endfor %}
+									</ul>
+							</div>
+								{% if instance.action_object|link_lookup:'tool' %}
+									<img class="link" src="{% static 'vibe/media/image/icons/link.png' %}" style="width: 17px; height: 17px; margin-top: 6px; margin-right: 8px; position: absolute;">
+									<div class="link_num" style="font-size: 13px; display: inline-block; margin-top: 6px; margin-left: 24px;"> [ {{ instance.action_object|link_lookup:'tool' }} ]</div>
+									<div class="link_verbose">
+									[
+										{% for title in instance.action_object|link_lookup:'posttitles' %}
+											{{ title.post.post_title }} : 
+										{% endfor %}
+									]
+									</div>
+								{% endif %}
+						</div>
+						<div class="comments">
+							<form class="comment_form_tool">
+								<input name="{{ instance.action_object.tool_name }}" placeholder="   Add to discussion..." class="comment-input">
+							</form>
+							<div style="display: inline-block; overflow-y: scroll; max-height: 300px; width: 100%;">
+							{% for comment in instance.action_object.tool_comments.all %}
+								<div class="comment">
+									<img src="media/{{ comment.user.userprofile.image }}" class="comment_image"><div class="comment_body"><div class="comment_username">@{{ comment.user.username }}</div> <div class="comment_comment">	{{ comment.comment }}</div></div>
+								</div>
+							{% endfor %}
+							</div>
+						</div>									
+					</div>
+				{% endif %}
+			{% endif %}
+			{% endfor %}
+
+<!-- END FEED -->
+		</div>
+	</div>
+
+
+
+
+	<!-- Modal for Health sub-sections -->
+	        			{% for key, value in sub_sections.items %}
+	        				{% if key == 'health' %}
+	        					 {% for sub in value %}
+	        					 <div class="health sub-topics" id="node{{ forloop.counter }}">
+	        					 <a href="{% url 'subtopic' topic='health' subtopic=sub %}" style="text-decoration: none;">
+	        					 	<button class="sub-btn">
+	        					 		<div style="margin-bottom: 45%; font-family: 'Comic Sans MS'">{{ sub }}</div>
+	        					 		<div class="sub-btn-post-tool">
+			        					 		<img src="{% static 'vibe/media/image/icons/post-outline.png' %}" style="margin-right: 5px;">  {{ sub.posts_set.all|length }}
+			        					 		<img src="{% static 'vibe/media/image/icons/tool-outline.png' %}" style="width: 30px; height: 30px; margin-left: 8px; margin-right: 5px;">  {{ sub.tools_set.all|length }}
+	        					 			</div>
+	        					 	</button>
+	        					 </a>
+	        					 </div>
+	        					 {% endfor %}
+	        				{% endif %}
+	        			{% endfor %}
+	      		
+
+	<!--  business sub-sections -->
+	
+	        			{% for key, value in sub_sections.items %}
+	        				{% if key == 'business' %}
+	        					 {% for sub in value %}
+	        					 <div class="business sub-topics" id="node{{ forloop.counter }}">
+	        					 <a href="{% url 'subtopic' topic='business' subtopic=sub %}" style="text-decoration: none;">
+	        					 	<button class="sub-btn">
+	        					 		<div style="margin-bottom: 45%; font-family: 'Comic Sans MS'">{{ sub }}</div>
+	        					 		<div class="sub-btn-post-tool">
+			        					 		<img src="{% static 'vibe/media/image/icons/post-outline.png' %}" style="margin-right: 5px;">  {{ sub.posts_set.all|length }}
+			        					 		<img src="{% static 'vibe/media/image/icons/tool-outline.png' %}" style="width: 30px; height: 30px; margin-left: 8px; margin-right: 5px;">  {{ sub.tools_set.all|length }}
+	        					 			</div>
+	        					 	</button>
+	        					 </a>
+	        					 </div>
+	        					 {% endfor %}
+	        				{% endif %}
+	        			{% endfor %}
+	      	
+
+	<!-- Auto sub-sections -->
+	
+	        			{% for key, value in sub_sections.items %}
+	        				{% if key == 'auto' %}
+	        					 {% for sub in value %}
+	        					 <div class="auto sub-topics" id="node{{ forloop.counter }}">
+	        					 	<a href="{% url 'subtopic' topic='auto' subtopic=sub %}">
+	        					 	<button class="sub-btn">
+	        					 		<div style="margin-bottom: 45%; font-family: 'Comic Sans MS'">{{ sub }}</div>
+	        					 		<div class="sub-btn-post-tool">
+			        					 		<img src="{% static 'vibe/media/image/icons/post-outline.png' %}" style="margin-right: 5px;">  {{ sub.posts_set.all|length }}
+			        					 		<img src="{% static 'vibe/media/image/icons/tool-outline.png' %}" style="width: 30px; height: 30px; margin-left: 8px; margin-right: 5px;">  {{ sub.tools_set.all|length }}
+	        					 			</div>
+	        					 	</button>
+	        					 </a>
+	        					 </div>
+	        					 {% endfor %}
+	        				{% endif %}
+	        			{% endfor %}
+	      	
+
+	<!-- Finance sub-sections -->
+	
+	        			{% for key, value in sub_sections.items %}
+	        				{% if key == 'finance' %}
+	        					 {% for sub in value %}
+	        					 <div class="finance sub-topics" id="{{ forloop.counter }}">
+	        					 	<a href="{% url 'subtopic' topic='finance' subtopic=sub %}">
+	        					 	<button class="sub-btn">
+	        					 		<div style="margin-bottom: 45%; font-family: 'Comic Sans MS'">{{ sub }}</div>
+	        					 			<div class="sub-btn-post-tool">
+			        					 		<img src="{% static 'vibe/media/image/icons/post-outline.png' %}" style="margin-right: 5px;">  {{ sub.posts_set.all|length }}
+			        					 		<img src="{% static 'vibe/media/image/icons/tool-outline.png' %}" style="width: 30px; height: 30px; margin-left: 8px; margin-right: 5px;">  {{ sub.tools_set.all|length }}
+	        					 			</div>
+	        					 	</button>
+	        					 </a>
+	        					 </div>
+	        					 {% endfor %}
+	        				{% endif %}
+	        			{% endfor %}
+	      	
+
+	<!--  Music sub-sections -->
+	
+			
+				{% for key, value in sub_sections.items %}
+					{% if key == 'music' %}
+						 {% for sub in value %}
+						 <div class="music sub-topics" id="node{{ forloop.counter }}">
+						 	<a href="{% url 'subtopic' topic='music' subtopic=sub %}">
+						 	<button class="sub-btn">
+						 		<div style="margin-bottom: 45%; font-family: 'Comic Sans MS'">{{ sub }}</div>
+						 		<div class="sub-btn-post-tool">
+	        					 		<img src="{% static 'vibe/media/image/icons/post-outline.png' %}" style="margin-right: 5px;">  {{ sub.posts_set.all|length }}
+	        					 		<img src="{% static 'vibe/media/image/icons/tool-outline.png' %}" style="width: 30px; height: 30px; margin-left: 8px; margin-right: 5px;">  {{ sub.tools_set.all|length }}
+						 			</div>
+						 	</button>
+						 </a>
+						 </div>
+						 {% endfor %}
+					{% endif %}
+				{% endfor %}
+			  			
+	    
+
+	<!-- Politics sub-sections -->
+	
+	        			{% for key, value in sub_sections.items %}
+	        				{% if key == 'politics' %}
+	        					 {% for sub in value %}
+	        					 <div class="politics sub-topics" id="node{{ forloop.counter }}">
+	        					 	<a href="{% url 'subtopic' topic='politics' subtopic=sub %}">
+	        					 	<button class="sub-btn">
+	        					 		<div style="margin-bottom: 45%; font-family: 'Comic Sans MS'">{{ sub }}</div>
+	        					 		<div class="sub-btn-post-tool">
+			        					 		<img src="{% static 'vibe/media/image/icons/post-outline.png' %}" style="margin-right: 5px;">  {{ sub.posts_set.all|length }}
+			        					 		<img src="{% static 'vibe/media/image/icons/tool-outline.png' %}" style="width: 30px; height: 30px; margin-left: 8px; margin-right: 5px;">  {{ sub.tools_set.all|length }}
+	        					 			</div>
+	        					 	</button>
+	        					 </a>
+	        					 </div>
+	        					 {% endfor %}
+	        				{% endif %}
+	        			{% endfor %}
+	      	
+
+	<!-- Books sub-sections -->
+	
+	        			{% for key, value in sub_sections.items %}
+	        				{% if key == 'books' %}
+	        					 {% for sub in value %}
+	        					 <div class="books sub-topics" id="node{{ forloop.counter }}">
+	        					 	<a href="{% url 'subtopic' topic='books' subtopic=sub %}">
+	        					 	<button class="sub-btn">
+	        					 		<div style="margin-bottom: 45%; font-family: 'Comic Sans MS'">{{ sub }}</div>
+	        					 		<div class="sub-btn-post-tool">
+			        					 		<img src="{% static 'vibe/media/image/icons/post-outline.png' %}" style="margin-right: 5px;">  {{ sub.posts_set.all|length }}
+			        					 		<img src="{% static 'vibe/media/image/icons/tool-outline.png' %}" style="width: 30px; height: 30px; margin-left: 8px; margin-right: 5px;">  {{ sub.tools_set.all|length }}
+	        					 			</div>
+	        					 	</button>
+	        					 </a>
+	        					 </div>
+	        					 {% endfor %}
+	        				{% endif %}
+	        			{% endfor %}
+	      
+
+	<!-- Film sub-sections -->
+	
+	        			{% for key, value in sub_sections.items %}
+	        				{% if key == 'film' %}
+	        					 {% for sub in value %}
+	        					 <div class="film sub-topics" id="node{{ forloop.counter }}">
+	        					 	<a href="{% url 'subtopic' topic='film' subtopic=sub %}">
+	        					 	<button class="sub-btn">
+	        					 		<div style="margin-bottom: 45%; font-family: 'Comic Sans MS'">{{ sub }}</div>
+	        					 		<div class="sub-btn-post-tool">
+			        					 		<img src="{% static 'vibe/media/image/icons/post-outline.png' %}" style="margin-right: 5px;">  {{ sub.posts_set.all|length }}
+			        					 		<img src="{% static 'vibe/media/image/icons/tool-outline.png' %}" style="width: 30px; height: 30px; margin-left: 8px; margin-right: 5px;">  {{ sub.tools_set.all|length }}
+	        					 			</div>
+	        					 	</button>
+	        					 </a>
+	        					 </div>
+	        					 {% endfor %}
+	        				{% endif %}
+	        			{% endfor %}
+	      	
+
+	<!-- Sports sub-sections -->
+	
+	        			{% for key, value in sub_sections.items %}
+	        				{% if key == 'sports' %}
+	        					 {% for sub in value %}
+	        					 <div class="sports sub-topics" id="node{{ forloop.counter }}">
+	        					 	<a href="{% url 'subtopic' topic='sports' subtopic=sub %}">
+	        					 	<button class="sub-btn">
+	        					 		<div style="margin-bottom: 45%; font-family: 'Comic Sans MS'">{{ sub }}</div>
+	        					 		<div class="sub-btn-post-tool">
+			        					 		<img src="{% static 'vibe/media/image/icons/post-outline.png' %}" style="margin-right: 5px;">  {{ sub.posts_set.all|length }}
+			        					 		<img src="{% static 'vibe/media/image/icons/tool-outline.png' %}" style="width: 30px; height: 30px; margin-left: 8px; margin-right: 5px;">  {{ sub.tools_set.all|length }}
+	        					 			</div>
+	        					 	</button>
+	        					 </a>
+	        					 </div>
+	        					 {% endfor %}
+	        				{% endif %}
+	        			{% endfor %}
+	      	
+
+	<!-- Entrepreneurship sub-sections -->
+	
+	        			{% for key, value in sub_sections.items %}
+	        				{% if key == 'entrepreneurship' %}
+	        					 {% for sub in value %}
+	        					 <div class="entrepreneurship sub-topics" id="node{{ forloop.counter }}">
+	        					 	<a href="{% url 'subtopic' topic='entrepreneurship' subtopic=sub %}">
+	        					 	<button class="sub-btn">
+	        					 		<div style="margin-bottom: 45%; font-family: 'Comic Sans MS'">{{ sub }}</div>
+	        					 		<div class="sub-btn-post-tool">
+			        					 		<img src="{% static 'vibe/media/image/icons/post-outline.png' %}" style="margin-right: 5px;">  {{ sub.posts_set.all|length }}
+			        					 		<img src="{% static 'vibe/media/image/icons/tool-outline.png' %}" style="width: 30px; height: 30px; margin-left: 8px; margin-right: 5px;">  {{ sub.tools_set.all|length }}
+	        					 			</div>
+	        					 	</button>
+	        					 </a>
+	        					 </div>
+	        					 {% endfor %}
+	        				{% endif %}
+	        			{% endfor %}
+	      	
+<!-- Technology Sub Sections -->
+	
+	        			{% for key, value in sub_sections.items %}
+	        				{% if key == 'technology' %}
+	        					 {% for sub in value %}
+	        					 <div class="technology sub-topics" id="node{{ forloop.counter }}">
+	        					 	<a href="{% url 'subtopic' topic='technology' subtopic=sub %}">
+	        					 	<button class="sub-btn">
+	        					 		<div style="margin-bottom: 45%; font-family: 'Comic Sans MS'">{{ sub }}</div>
+	        					 		<div class="sub-btn-post-tool">
+			        					 		<img src="{% static 'vibe/media/image/icons/post-outline.png' %}" style="margin-right: 5px;">  {{ sub.posts_set.all|length }}
+			        					 		<img src="{% static 'vibe/media/image/icons/tool-outline.png' %}" style="width: 30px; height: 30px; margin-left: 8px; margin-right: 5px;">  {{ sub.tools_set.all|length }}
+	        					 			</div>
+	        					 	</button>
+	        					 </a>
+	        					 </div>
+	        					 {% endfor %}
+	        				{% endif %}
+	        			{% endfor %}
+	      	
+
+<!-- Beauty Sub Sections -->
+
+	
+	        			{% for key, value in sub_sections.items %}
+	        				{% if key == 'beauty' %}
+	        					 {% for sub in value %}
+	        					 <div class="beauty sub-topics" id="node{{ forloop.counter }}">
+	        					 	<a href="{% url 'subtopic' topic='beauty' subtopic=sub %}">
+	        					 	<button class="sub-btn">
+	        					 		<div style="margin-bottom: 45%; font-family: 'Comic Sans MS'">{{ sub }}</div>
+	        					 		<div class="sub-btn-post-tool">
+			        					 		<img src="{% static 'vibe/media/image/icons/post-outline.png' %}" style="margin-right: 5px;">  {{ sub.posts_set.all|length }}
+			        					 		<img src="{% static 'vibe/media/image/icons/tool-outline.png' %}" style="width: 30px; height: 30px; margin-left: 8px; margin-right: 5px;">  {{ sub.tools_set.all|length }}
+	        					 			</div>
+	        					 	</button>
+	        					 </a>
+	        					 </div>
+	        					 {% endfor %}
+	        				{% endif %}
+	        			{% endfor %}
+	      	
+<!-- Fashion Sub Sections -->
+	
+	        			{% for key, value in sub_sections.items %}
+	        				{% if key == 'fashion' %}
+	        					 {% for sub in value %}
+	        					 <div class="fashion sub-topics" id="node{{ forloop.counter }}">
+	        					 	<a href="{% url 'subtopic' topic='fashion' subtopic=sub %}">
+	        					 	<button class="sub-btn">
+	        					 		<div style="margin-bottom: 45%; font-family: 'Comic Sans MS'";>{{ sub }}</div>
+	        					 		<div class="sub-btn-post-tool">
+			        					 		<img src="{% static 'vibe/media/image/icons/post-outline.png' %}" style="margin-right: 5px;">  {{ sub.posts_set.all|length }}
+			        					 		<img src="{% static 'vibe/media/image/icons/tool-outline.png' %}" style="width: 30px; height: 30px; margin-left: 8px; margin-right: 5px;">  {{ sub.tools_set.all|length }}
+	        					 			</div>
+	        					 	</button>
+	        					 </a>
+	        					 </div>
+	        					 {% endfor %}
+	        				{% endif %}
+	        			{% endfor %}
+	      
+
+	{% for interest in interests %}
+		<div class="modal fade" id="follower_section{{ interest.section }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-body">
+					{% for key,value in followers_set.items %}
+						{% if key == interest.section %}
+							{% for person in value %}
+							<div class="sub-topics" style="border: none;">
+								<a href="{% url 'userprofile' username=person.username %}">
+									<img src="media/{{ person.userprofile.image }}" style="width: 100%; height: 100%; border-radius: 20%;">
+								</a>
+	        					 <div style="text-transform: capitalize;">{{ person.username }}</div>
+	        				</div>
+	        				{% endfor %}
+						{% endif %}
+					{% endfor %}					
+					</div>  			
+				</div>
+			</div>
+		</div>
+	{% endfor %}
+
+	{% for section in user_following_set %}
+	{% if section %}
+
+		<div class="modal fade" id="following_section{{ section }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-body">
+					{% for person in user_following %}
+						{% if person.section == section %}
+							<div class="sub-topics" style="border: none;">
+	        					 <a href="{% url 'userprofile' username=person.userprofile %}">
+	        					 	<img src="media/{{ person.userprofile.image }}" style="width: 100%; height: 100%; border-radius: 20%;">
+	        					 </a>
+	        				
+	        					 <div style="text-transform: capitalize;">{{ person.userprofile.user.first_name }}  {{ person.userprofile.user.last_name }}</div>
+	        				</div>
+						{% endif %}
+					{% endfor %}
+					</div>  			
+				</div>
+			</div>
+		</div>		
+							
+	{% endif %}					
+	{% endfor %}
+
+</html>

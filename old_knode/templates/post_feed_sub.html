@@ -1,0 +1,16 @@
+<script type="text/javascript">
+	$('document').ready(function(){
+		$('.subsection_choice').click(function(){
+			var subsection = $(this).text();
+			$('#subsection_choice_btn').text(subsection);
+			$('.sub_section').each(function(){
+				$(this).attr('value',subsection);
+			});
+			console.log(subsection);
+		});
+	});
+</script>
+
+{% for sub in subsections %}
+		<li><button type="button" class="subsection_choice">{{ sub }}</button></li>
+{% endfor %}

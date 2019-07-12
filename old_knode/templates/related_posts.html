@@ -1,0 +1,19 @@
+<script type="text/javascript">
+	$('.related_post').click(function(){
+		var value = $(this).children().attr('value');
+		$(this).children().prop('checked',true);
+		$('.related_post').each(function(){
+			if ($(this).children().attr('value') == value) {
+				$(this).css({'background-color': 'rgb(230,230,230)'});
+
+			} else {
+				$(this).css({'background-color': 'white'});
+			}
+		});
+	});
+</script>
+
+<li style="font-size: 14px; text-align: center; font-style: italic; font-weight: bold;">Relate To</li>
+{% for post in interest_posts %}
+	<li class="related_post" style="font-size: 13px; text-align: center;">{{ post.post_title }}<input type="radio" name="postname"  value="{{ post.post_title }}_{{ post.sub_section }}" style="display: none;"></li>
+{% endfor %}

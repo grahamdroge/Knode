@@ -1,0 +1,677 @@
+{% load static %}{% load activity_tags %}{% load knode_extras %}
+<!DOCTYPE html> 
+<html>
+	<head>
+		<link rel="shortcut icon" href="">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js" type="text/javascript"></script>
+		<!-- When referring to static files bootstrap.min.js it doesn work -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="{% static 'vibe/javasc/userhome.js' %}"></script>
+		<!-- <script type="text/javascript" src="{% static 'vibe/javasc/youtube-player2.js' %}"></script> -->
+
+		<script type="text/javascript">
+			$('document').ready(function(){
+				var search_input = $('input[id="autocomplete-search"]');
+				search_input.autocomplete({
+					source:  "{% url 'search' %}",
+					minLength: 2,
+					appendTo: '#search-user',
+				});
+				$('.dropdown-submenu a.test').on("click",function(e){
+				    $(this).next('ul').toggle();
+				    e.stopPropagation();
+				    e.preventDefault();
+				 });
+
+				$('#add-sub-btn').click(function(){
+					$('#add-sub-input').toggle(300);
+				});
+
+				$('.sub-btn').click(function(){
+					var subsection = $(this).children('.sub_name').text().replace(' ','_');
+					var username = $('.wrapper').attr('id');
+					var section = $(this).parent().attr('class').split(' ')[0];
+
+					var string = subsection+'-'+username+'-'+section;
+					console.log(string);
+
+					$('.user-info').load("{% url 'subsection' %}?string="+string);
+				});
+
+				$('.topic-subscribers').click(function(){
+					var check = $(this).children('div').attr('id');
+					var user = '{{ profile.username }}';
+					var sub = $(this).siblings('.sub-btn').children('.sub_name').text(); 
+					var interest;
+					$('.topic-node').each(function(){
+						if($(this).is(':visible')) {
+							interest = $(this).children('.topic-btn').children('h4').text();
+						} 
+					});
+					console.log(check);
+					console.log(user);
+					console.log(sub);
+					console.log(interest);
+
+					var num_followers = parseInt($(this).children('div').children('div').text());
+
+					if (check == 'not_following') {
+						$(this).children('div').css('background-color','white');
+						$(this).children('div').attr('id','is_following');
+						num_followers += 1;
+						$(this).children('div').children('div').text(num_followers);
+
+					} else {
+						$(this).children('div').css('background-color','gray');
+						$(this).children('div').attr('id','not_following');
+						num_followers -= 1;
+						$(this).children('div').children('div').text(num_followers);
+					}
+					
+
+					$.ajax({
+						url: '{% url "sub_follow" %}',
+						type: "POST",
+						data: {'check': check,'user': user,'sub': sub, 'interest': interest}
+					});
+				});
+
+// ----------------------------------------------------------- Interests fade middle and back
+				var left;
+				var top;
+				var mid_left;
+				var mid_top;
+				var el_width;
+				var el_height;
+
+				$('.topic-btn').click(function(){
+					var id = $(this).parent().attr('id');
+					var section = $(this).children("h4").text();
+
+					var num_sub_nodes;
+					num_sub_nodes = $('.'+section).length;
+					console.log(num_sub_nodes);
+
+					if (num_sub_nodes == 2) {
+						$('.sub1').css({
+							'left': '85%',
+							'top': '41%'
+						});
+						$('.sub2').css({
+							'left': '41%',
+							'top': '41%'
+						});
+					}
+
+					else if (num_sub_nodes == 3) {
+						$('.sub1').css({
+							'left': '82%',
+							'top': '60.5%'
+						});
+						$('.sub2').css({
+							'left': '44%',
+							'top': '61%'
+						});
+						$('.sub3').css({
+							'left': '63.5%',
+							'top': '8%'
+						});
+					}
+
+					else if (num_sub_nodes == 4) {
+						$('.sub1').css({
+							'left': '85%',
+							'top': '41%'
+						});
+						$('.sub2').css({
+							'left': '41%',
+							'top': '41%'
+						});
+						$('.sub3').css({
+							'left': '63.5%',
+							'top': '8%'
+						});
+						$('.sub4').css({
+							'left': '64%',
+							'top': '74.75%'
+						});
+					}
+
+					else if (num_sub_nodes == 5) {
+						$('.sub1').css({
+							'left': '83%',
+							'top': '50.5%'
+						});
+						$('.sub2').css({
+							'left': '43%',
+							'top': '50.5%'
+						});
+						$('.sub3').css({
+							'left': '50.5%',
+							'top': '11%'
+						});
+						$('.sub5').css({
+							'left': '75.5%',
+							'top': '11%'
+						});
+					}
+					// var imageUrl = "{% static 'vibe/media/image/technology-background.jpg' %}";
+					// $('.background').css('background-image', 'url("' + imageUrl + '")');
+					// $('.background').fadeIn(1000);
+
+					$('.contain').fadeOut();
+					$('.topic-node').each(function(){
+						if($(this).attr('id') == id) {
+							
+						} else {
+							$(this).fadeOut(300);
+						}
+					});
+
+					var current_left = $(this).parent().css('left');
+					var current_top = $(this).parent().css('top');
+
+					if((current_left != mid_left) || (current_top != mid_top)) {
+						left = current_left;
+						top = current_top;
+						el_width = $(this).parent().css('width');
+						el_height = $(this).parent().css('height');
+					}
+					
+					$('#cancel').fadeIn();
+					$(this).parent().animate({left:'39%',top:'33%',height: '190px',width: '190px'},600,function(){
+						$('.'+section).appendTo('.container');
+						$('.'+section).show();
+						mid_left = $(this).css('left');
+						mid_top = $(this).css('top');
+					});
+
+					$('#add-sub-btn').fadeIn(400);
+				});
+
+				$('#cancel').click(function(){
+					prev_btn = false;
+					$(this).fadeOut();
+					$('.background').fadeOut(1000);
+					$('.sub-topics').each(function(){
+						$(this).fadeOut();
+					});
+					$('.topic-node').each(function(){
+						if($(this).is(':visible')) {
+							
+							$(this).animate({left: left,top: top ,width: el_width,height: el_height},600);
+							left = false;
+							top = false;
+						}
+					});
+					$('.topic-node').each(function(){
+						$(this).fadeIn();
+					});
+					$('.contain').fadeIn();
+					var username = $('.wrapper').attr('id');
+					$('.user-info').load("{% url 'subsection' %}?username="+username);
+					$('#add-sub-btn').fadeOut(400);
+					$('#add-sub-input').fadeOut(400);
+				});
+// --------------------------------------------------------------
+
+
+				$('.comment_btn').click(function(){
+					$(this).parent().parent().next('.comments').toggle(300);
+				});
+
+				$('.comment_form_post').submit(function(){
+					event.preventDefault();
+					var comment = $(this).children('input').val();
+					var post_title = $(this).children('input').attr('name');
+					$(this).children('input').val('');
+
+					$.ajax({
+						url: '{% url "comment" %}',
+						type: "POST",
+						data: {'title': post_title,'comment': comment, 'type': 'post'}
+					});
+				});
+
+				$('.add_subtopic').submit(function(){
+					event.preventDefault();
+					var subtopic = $(this).children('input').val();
+					var interest;
+					$(this).children('input').val('');
+					$('.topic-node').each(function(){
+						if($(this).is(':visible')) {
+							interest = $(this).children('.topic-btn').children('h4').text();
+						} 
+					});
+					if (subtopic) {
+						var sub_id = $('.'+interest).length;
+
+						var el;
+						if(sub_id) {
+							el = $('.'+interest).clone();
+							el.children('.sub-btn').children('.sub_name').text(subtopic);
+							sub_id += 1;
+							el.attr('id','node-sub'+sub_id);
+							$(el).appendTo('html');
+						}
+					}
+
+					$.ajax({
+						url: '{% url "addsub" %}',
+						type: "POST",
+						data: {'subtopic': subtopic,'interest': interest}
+					});
+				});
+
+				$('.comment_form_tool').submit(function(){
+					event.preventDefault();
+					var comment = $(this).children('input').val();
+					var tool_name = $(this).children('input').attr('name');
+					$(this).children('input').val('');
+
+					$.ajax({
+						url: '{% url "comment" %}',
+						type: "POST",
+						data: {'title': tool_name,'comment': comment, 'type': 'tool'}
+					});
+				});
+
+				$('.save').click(function(){
+					if($(this).attr('src') == '{% static "vibe/media/image/icons/saved.png" %}'){
+						$(this).attr('src','{% static "vibe/media/image/icons/save.png" %}');
+						var text = $(this).next('.num_saved').text().split(' ')[1];
+						var num = parseInt(text);
+						num = num-=1;
+						$(this).next('.num_saved').text('Save '+num);
+						var arr = $(this).attr('value').split("_");
+						var user = arr[0];
+						var title = arr[1];
+						var sub = arr[2];
+						var interest = arr[3];
+						var type = arr[4];
+				
+						$.ajax({
+							url: "{% url 'home' %}",
+							type: "POST",
+							data: {'username': user, 'title': title, 'type': type, 'sub': sub, 'interest': interest, 'action': 'unsave' }
+						});
+						
+					} else {
+						$(this).attr('src','{% static "vibe/media/image/icons/saved.png" %}');
+						var text = $(this).next('.num_saved').text().split(' ')[1];
+						var num = parseInt(text);
+						num = num+=1;
+						$(this).next('.num_saved').text('Save '+num);
+						var arr = $(this).attr('value').split("_");
+						var user = arr[0];
+						var title = arr[1];
+						var sub = arr[2];
+						var interest = arr[3];
+						var type = arr[4];
+
+						$.ajax({
+							url: "{% url 'home' %}",
+							type: "POST",
+							data: {'username': user, 'title': title, 'type': type, 'sub': sub, 'interest': interest, 'action': 'save' }
+						});
+					 }
+				});
+
+				var csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+
+				$(function() {
+
+				    // This function gets cookie with a given name
+				    function getCookie(name) {
+				        var cookieValue = null;
+				        if (document.cookie && document.cookie != '') {
+				            var cookies = document.cookie.split(';');
+				            for (var i = 0; i < cookies.length; i++) {
+				                var cookie = jQuery.trim(cookies[i]);
+				                // Does this cookie string begin with the name we want?
+				                if (cookie.substring(0, name.length + 1) == (name + '=')) {
+				                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+				                    break;
+				                }
+				            }
+				        }
+				        return cookieValue;
+				    }
+				    var csrftoken = getCookie('csrftoken');
+
+				    /*
+				    The functions below will create a header with csrftoken
+				    */
+
+				    function csrfSafeMethod(method) {
+				        // these HTTP methods do not require CSRF protection
+				        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+				    }
+				    function sameOrigin(url) {
+				        // test that a given url is a same-origin URL
+				        // url could be relative or scheme relative or absolute
+				        var host = document.location.host; // host + port
+				        var protocol = document.location.protocol;
+				        var sr_origin = '//' + host;
+				        var origin = protocol + sr_origin;
+				        // Allow absolute or scheme relative URLs to same origin
+				        return (url == origin || url.slice(0, origin.length + 1) == origin + '/') ||
+				            (url == sr_origin || url.slice(0, sr_origin.length + 1) == sr_origin + '/') ||
+				            // or any other URL that isn't scheme relative or absolute i.e relative.
+				            !(/^(\/\/|http:|https:).*/.test(url));
+				    }
+
+				    $.ajaxSetup({
+				        beforeSend: function(xhr, settings) {
+				            if (!csrfSafeMethod(settings.type) && sameOrigin(settings.url)) {
+				                // Send the token to same-origin, relative URLs only.
+				                // Send the token only if the method warrants CSRF protection
+				                // Using the CSRFToken value acquired earlier
+				                xhr.setRequestHeader("X-CSRFToken", csrftoken);
+				            }
+				        }
+				    });
+
+				});
+			});
+		</script>
+
+
+		<link rel="stylesheet" href="http://code.jquery.com/ui/1.8.18/themes/base/jquery-ui.css" type="text/css" media="all"/>
+  		<link rel="stylesheet" type="text/css" href="{% static 'boots/css/bootstrap.min.css' %}">
+		<link rel="stylesheet" type="text/css" href="{% static 'vibe/cssfiles/home.css' %}">
+		<link href="https://fonts.googleapis.com/css?family=Baloo+Thambi" rel="stylesheet">
+		<link href='https://fonts.googleapis.com/css?family=Bungee Shade' rel='stylesheet'>
+		<link href='https://fonts.googleapis.com/css?family=Bungee Outline' rel='stylesheet'>
+		<link href='https://fonts.googleapis.com/css?family=Londrina Outline' rel='stylesheet'>
+		<link href='https://fonts.googleapis.com/css?family=Syncopate' rel='stylesheet'>
+
+
+	</head>
+
+	<div class="wrapper" id="{{ profile.username }}">
+	<body>
+		<div class="navbar navbar-inverse navbar-fixed-top" role="navigation" style="height: 53px;">
+				<div class="navbar-header">
+					<div class="navbar-brand" style="font-family: 'Baloo Thambi', sans-serif; font-size: 38px;">        KN <img src="{% static 'vibe/media/image/icons/knode.png' %}" style="display: inline; width: 38px; height: 38px; border: solid; border-width: 2px; padding: 2px; border-radius: 100%; top: -3px; position: relative;"> DE</div>
+
+
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+						<span class="sr-only">Toggle Navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					
+					<ul class="navbar navbar-nav navbar-left">
+
+
+						<li>
+							<form method="POST" id="search" role="search" class="navbar-form navbar-left">
+							{% csrf_token %}
+							<div class="form-group">
+								<input name="search-user" id="autocomplete-search" class="form-control" placeholder="Search...  ">
+								<button type="submit" class="btn btn-default" id="search-button"><span class="glyphicon glyphicon-search"></span></button>
+								<div id="search-user">
+								
+								</div>
+							</div>	
+							</form>		
+						</li>
+
+					</ul>
+					
+				</div>
+				<div class="navbar-collapse collapse">
+					<ul class="nav navbar-nav navbar-right">
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown" style="position: relative; top: -2px;"><img src="{% static 'vibe/media/image/icons/notification.png' %}" style="width: 25px; height: 25px; margin-bottom: 0; margin-right: 8px;"></a>
+							<ul class="dropdown-menu">
+								<li><a href="#" class="dropdown-toggle" style="font-family: 'Comic Sans MS'; font-size: 18px;">Notification 1</a></li>
+								<li><a href="#" class="dropdown-toggle" style="font-family: 'Comic Sans MS'; font-size: 18px;">Notification 2</a></li>
+							</ul>
+						</li>
+						<li>
+							<a href="{% url 'home' %}" style="margin-bottom: 0;"><img src="{% static 'vibe/media/image/icons/feed.png' %}" style="width: 22px; height: 22px;"></a>
+						</li>
+
+						<li>
+							<a href="{% url 'userprofile' username=user.username %}" style="margin-bottom: 0;"><img src="{% static 'vibe/media/image/icons/knode.png' %}" style="width: 22px; height: 22px;"></a>
+						</li>
+	
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="{% static 'vibe/media/image/icons/settings.png' %}" style="margin-right: 20px; width: 22px; height: 22px;"></a>
+							<ul class="dropdown-menu">
+								<li><a href="{% url 'edit' %}" class="dropdown-toggle" style="font-family: 'Comic Sans MS'; font-size: 18px;">Edit Profile</a></li>
+								<li><a href="{% url 'logout' %}" class="dropdown-toggle" style="font-family: 'Comic Sans MS'; font-size: 18px;">Logout</a></li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+		</div>
+		
+
+	<div class="container_guest">
+		<img id="cancel" src="{% static 'vibe/media/image/icons/exit.png' %}" style="float: right; display: none; width: 40px; height: 40px; margin-top: 8px;">
+		<div class="contain">
+			<img id="profile-image" src="{% static profile.userprofile.image.url %}" data-toggle='modal' data-target='#profile-image-large'>
+			{% if profile.username == user.username %}
+				<div class="add-in">
+
+							
+					<button id="add-btn" data-toggle="modal" data-target="#interestmodal">+</button>
+
+				</div>
+			{% endif %}
+			<div class="modal fade" id="profile-image-large" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+					<div class="modal-dialog modal-lg" role="document">
+						<div class="modal-content" style="border-radius: 13px; width: 60%; left: 25%; top: 80px;">
+							<div class="modal-body" style="margin: 0; padding: 0; border-radius: 10px;">
+							<img src="{% static profile.userprofile.image.url %}" style="width: 100%; height: 500px; border-radius: 10px;">
+							</div>  			
+					</div>
+					</div>
+			</div>
+
+			
+		</div>
+
+			{% for interest in interests %}
+			{% with 'vibe/media/image/icons/'|add:interest.section|add:'-icon.png' as route %}
+			<div class="topic-node" id="node{{ forloop.counter }}" style="border: outset; border-width: 3px; box-shadow: 0px 0px 50px #000; border-color: white;">
+
+					<div class="topic-btn">
+						<img src="{% static route %}" width="37%" height="37%" style="position: relative; top: 38%;">
+						<h4 class="section-node">{{ interest.section }}</h4>
+					</div>
+					<!-- <button class="topic-subscribers"> -->
+					<div class="topic-subscribers">
+					{% if user|is_following:interest %}
+					<div style="width: 48px; height: 26px; position: relative; left: 6%; border: solid; border-color: black; padding-left: 0px; border-width: 1px; padding-top: 0px; border-radius: 5px; top: -30%; margin-right: 6px; background-color: gray;">
+					{% else %}
+					<div style="width: 48px; height: 26px; position: relative; left: 6%; border: solid; border-color: black; padding-left: 0px; border-width: 1px; padding-top: 0px; border-radius: 5px; top: -30%; margin-right: 6px; font-size: 10px;">
+					{% endif %}
+						
+							
+							
+								<span style="position: relative; top: 3px; margin-right: 10px;">All</span>
+							
+						
+						<div style="display: inline-block; position: absolute; width: 20px; color: black; margin-left: 0px; font-size: 14px; font-style: italic; top: 2px; right: 0;">{{ user.username|total_followers:interest }}</div>
+					</div>
+					</div>
+					<!-- </button> -->
+			</div>
+			{% endwith %}
+			{% endfor %}
+		
+	</div>
+	{% if profile.username == user.username %}
+		<div style="position: absolute; left: 40%; top: 31%;">
+		<form class="add_subtopic">
+			<input id="add-sub-input" type="text" name="subtopic-add" style="position: absolute; top: -160px; left: -50px; height: 30px; border-radius: 10px; width: 180px; display: none; margin-left: 35px;" placeholder="   Add Subtopic...">
+			<button id="add-sub-btn" style="position: absolute; top: -160px; left: -50px; height: 30px; border-radius: 10px; width: 30px; background-color: white; display: none;">+</button>
+		</form>
+		</div>
+	{% endif %}
+	</body>
+
+		<div class="user-info" style="border: solid; overflow-y: scroll;">
+			{% include 'content_left.html' %}
+		</div>
+
+
+<!-- Sub topics per interest -->
+
+
+{% for topic in topics %}
+	{% for key, value in sub_sections.items %}
+		{% if key == topic %}
+			 {% for sub in value %}
+			 <div class="{{ topic }} sub-topics sub{{ forloop.counter }}" id="node-sub{{ forloop.counter }}" style="border: solid; border-color: black;">
+
+			 	<div class="sub-btn">
+			 		<div class="sub_name" style="margin-bottom: 45%;">{{ sub }}</div>
+			 		<div class="sub-btn-post-tool">
+			 		</div>
+			 	</div>
+
+			 	<!-- <a href="{% follow_all_url sub %}" class="topic-subscribers"> -->
+			 	<div class="topic-subscribers">
+					{% if user|is_following:sub %}
+					<div id="is_following" style="width: 48px; height: 26px; position: relative; left: 6%; border: solid; border-color: black; padding-left: 0px; border-width: 1px; padding-top: 0px; border-radius: 5px; top: -30%; margin-right: 6px; background-color: white;">
+					{% else %}
+					<div id="not_following" style="width: 48px; height: 26px; position: relative; left: 6%; border: solid; border-color: black; padding-left: 0px; border-width: 1px; padding-top: 0px; border-radius: 5px; top: -30%; margin-right: 6px;">
+					{% endif %}
+						
+							
+							
+								<img src="{% static 'vibe/media/image/icons/user-outline.png' %}" style=" position: relative; width: 13px; height: 13px; display: inline-block; left: -8px; top: -4px;">
+							
+						
+						<div class="sub_followers" style="display: inline-block; position: absolute; width: 20px; color: black; margin-left: 0px; font-size: 14px; font-style: italic; top: 2px; right: 0;">{{ sub.number_followers }}</div>
+					</div>
+					<!-- </a> -->
+				</div>
+			 </div>
+			 {% endfor %}
+		{% endif %}
+	{% endfor %}
+{% endfor %}
+	
+
+
+
+	{% for interest in interests %}
+		<div class="modal fade" id="follower_section{{ interest.section }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-body">
+					{{ interest }}
+					</div>  			
+				</div>
+			</div>
+		</div>
+	{% endfor %}
+
+	{% for section in profile_following_set %}
+	{% if section %}
+
+		<div class="modal fade" id="following_section{{ section }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-body">
+					{% for person in profile_following %}
+						{% if person.section == section %}
+							<div class="sub-topics" style="border-radius: 100%;">
+	        					 <a href="{% url 'userprofile' username=person.userprofile %}">
+	        					 	<img src="{% static person.userprofile.image.url %}" style="width: 100%; height: 100%; border-radius: 100%;">
+	        					 </a>
+	        					 <div style="text-transform: capitalize;">{{ person.userprofile.user.first_name }}  {{ person.userprofile.user.last_name }}</div>
+	        				</div>	
+						{% endif %}
+					{% endfor %}
+					</div>  			
+				</div>
+			</div>
+		</div>		
+							
+	{% endif %}					
+	{% endfor %}
+
+</html>
+
+<!-- Modal for Interest Selection -->
+	<div class="modal fade" id="interestmodal" tabindex="-1" role="dialog" aria-labelledby="interestmodaltitle" aria-hidden="true">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<h4 class="modal-title">
+					  Pick Your Topics
+				</h4>
+				<form method="POST" id="post-form" action="">
+					{% csrf_token %}
+					<div class="modal-body">
+						
+						
+						<div class="topic" id="health">
+							<i>{{ topics.0 }}</i>
+							<div class="topic-choice">{{ topic_form.health }}</div>
+						</div>
+						<div class="topic" id="finance">
+							<i>{{ topics.1 }}</i>
+							<div class="topic-choice">{{ topic_form.finance }}</div>
+						</div>
+						<div class="topic" id="auto">
+							<i>{{ topics.2 }}</i>
+							<div class="topic-choice">{{ topic_form.auto }}</div>
+						</div>
+						<div class="topic" id="film">
+							<i>{{ topics.3 }}</i>
+							<div class="topic-choice">{{ topic_form.film }}</div>
+						</div><div class="topic" id="entrepreneurship">
+							<i>{{ topics.4 }}</i>
+							<div class="topic-choice">{{ topic_form.entrepreneurship }}</div>
+						</div>
+						<div class="topic" id="sports">
+							<i>{{ topics.5 }}</i>
+							<div class="topic-choice">{{ topic_form.sports }}</div>
+						</div>
+						<div class="topic" id="books">
+							<i>{{ topics.6 }}</i>
+							<div class="topic-choice">{{ topic_form.books }}</div>
+						</div>
+						<div class="topic" id="politics">
+							<i>{{ topics.7 }}</i>
+							<div class="topic-choice">{{ topic_form.politics }}</div>
+						</div>
+						<div class="topic" id="music">
+							<i>{{ topics.8 }}</i>
+							<div class="topic-choice">{{ topic_form.music }}</div>
+						</div>
+						<div class="topic" id="cosmetics">
+							<i>{{ topics.9 }}</i>
+							<div class="topic-choice">{{ topic_form.beauty }}</div>
+						</div>
+						<div class="topic" id="tech">
+							<i>{{ topics.10 }}</i>
+							<div class="topic-choice">{{ topic_form.technology }}</div>
+						</div>
+						<div class="topic" id="fashion">
+							<i>{{ topics.11 }}</i>
+							<div class="topic-choice">{{ topic_form.fashion }}</div>
+						</div>
+						<div class="topic" id="business">
+							<i>{{ topics.12 }}</i>
+							<div class="topic-choice">{{ topic_form.business }}</div>
+						</div>
+						
+
+					</div>
+					<div class="modal-footer">
+						<button class="btn btn-primary" type="submit" name="topic">Add</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>

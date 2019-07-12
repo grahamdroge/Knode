@@ -1,0 +1,140 @@
+{% load static %}
+<!DOCTYPE html> 
+<html>
+	<head>
+
+		<link rel="shortcut icon" href="">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+		<!-- When referring to static files bootstrap.min.js it doesn work -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="{% static 'vibe/javasc/userhome.js' %}"></script>
+
+
+  		<link rel="stylesheet" type="text/css" href="{% static 'boots/css/bootstrap.min.css' %}">
+		<link rel="stylesheet" type="text/css" href="{% static 'vibe/cssfiles/post_tool.css' %}">
+
+	</head>
+
+	<div class="wrapper">
+	<body>
+		<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+				<div class="navbar-header">
+					<a href="{% url 'home' %}" class="navbar-brand">        KN <img src="{% static 'vibe/media/image/icons/knode.png' %}" style="display: inline;"> DE</a>
+
+
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+						<span class="sr-only">Toggle Navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					
+					
+					
+				</div>
+				<div class="navbar-collapse collapse">
+					<ul class="nav navbar-nav navbar-right">
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><img src="{% static 'vibe/media/image/icons/settings.png' %}" style="margin-right: 5px; width: 24px; height: 24px;"><b class="caret" style="margin-right: 6px;"></b></a>
+							<ul class="dropdown-menu">
+								<li><a href="{% url 'edit' %}" class="dropdown-toggle" data-toggle="dropdown">Edit Profile</a></li>
+								<li><a href="{% url 'logout' %}" class="dropdown-toggle" data-toggle="dropdown">Logout</a></li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+		</div>
+	</body>
+
+	<div class="tools">
+		<div class="tool-header">
+			<div class="add-btn"><button id="add-tool-btn" data-toggle="modal" data-target="#toolmodal">Add</button></div>
+			<div class="heading">Tools</div>
+		</div>
+		{% for tool in subtopic_tools %}
+			<div class="tool">
+				<a href="{{ tool.tool_link }}">{{ tool.tool_name }}</a>
+			</div>
+		{% endfor %}
+	</div>
+
+	<div class="topics">
+		<div class="post-header">
+			<div class="add-btn"><button data-toggle="modal" data-target="#postmodal">Add</button></div>
+			<div class="heading">Posts</div>
+		</div>
+		{% for post in subtopic_posts %}
+			<div class="post">
+				<h1><button style="background: none;" data-toggle="modal" data-target="#post-{{ forloop.counter }}">{{ post.post_title }}</button></h1>
+			</div>
+
+			<div class="modal fade" id="post-{{ forloop.counter }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+	  		<div class="modal-dialog" role="document">
+	   			<div class="modal-content">
+	   				<div class="modal-header">
+	   					<h1>{{ post.post_title }}</h1>
+	   				</div>
+	      			<div class="modal-body">
+	      				{{ post.post_content }} 
+	      				{% if post.post_image %}
+	      					<img src="{{ post.post_image.url }}" style="width: 180px; height: 180px;">
+	      				{% endif %}	
+	      			</div>  			
+	    		</div>
+	  		</div>
+		</div>
+
+		{% endfor %}
+	</div>
+
+	</div>
+
+
+	<!-- Modal for Add Tool -->
+	<div class="modal fade" id="toolmodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+	  		<div class="modal-dialog" role="document">
+	   			<div class="modal-content">
+	      			<div class="modal-body">
+	      			<form method="POST" id="tool-form">
+	      			{% csrf_token %}
+	        			{% for field in add_tool_form %}
+	        				{{ field }}
+	        			{% endfor %}
+	        			<button type="submit" name="tool">Save</button>
+	        		</form>
+	      			</div>  			
+	    		</div>
+	  		</div>
+	</div>
+
+
+<!-- Modal for Add Post -->
+	<div class="modal fade" id="postmodal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+	  		<div class="modal-dialog modal-lg" role="document">
+	   			<div class="modal-content">
+	   			<form method="POST" id="post-form" enctype="multipart/form-data">
+	   			{% csrf_token %}
+	   				<div class="modal-header">
+	   					<div style="width: 50%; display: inline-block;">
+	   						<span id="post-form-title">{{ add_post_form.post_title }}</span>
+	   						<span id="post_video_form_field" style="display: none;">{{ add_post_form.post_video }}</span>   
+	   					</div>
+	   					<div style="display: none;">
+	   						{{ add_post_form.post_image }}
+	   					</div>
+	   					<img id="image-file" src="{% static 'vibe/media/image/icons/film-icon-feed.png' %}" style="width: 50px; height: 50px; margin-right: 10px; margin-left: 10px;">
+	   					<div style="position: absolute; display: inline-block;">
+	   						<img id="youtube-url" src="{% static 'vibe/media/image/icons/youtube.png' %}" style="width: 50px; height: 50px;">
+	   					</div>
+	   				</div>
+
+	      			<div class="modal-body">
+
+	        			<div>{{ add_post_form.post_content }}</div>
+
+	        			<button type="submit" name="post">Save</button>
+	      			</div> 
+	      		</form>				
+	    		</div>
+	  		</div>
+		</div>

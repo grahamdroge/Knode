@@ -1,0 +1,110 @@
+{% load static %}{% load knode_extras %}
+
+<script type="text/javascript" src="{% static 'vibe/javasc/youtube-player1.js' %}"></script>
+
+<script type="text/javascript">
+	// $('document').ready(function(){
+	// 	$('.content_title').click(function(){
+	// 		$(this).parent().siblings('.content').slideToggle(400);
+	// 	});
+	// });
+</script>
+
+{% for post in top_post %}
+<div class="top_instance" style="margin-top: 4px; width: 100%; min-height: 10%; border: solid; border-width: 1px; border-radius: 10px;box-shadow: 0px 0px 7px #000;background-color: rgb(220,220,220);">
+
+	<img src="{{ post.sub_section.interest.userprofile.image.url }}" style="width: 40px; height: 40px; border-radius: 100%; margin-right: 8px; margin-left: 6px; margin-top: 8px; position: absolute;">  
+	<div style="height: 100%; display: inline-block; position: relative; left: 15%;">
+		<div style="font-size: 11px; position: relative; display: inline-block; height: 10%;width: 50%; margin-top: 6px;">
+			<a style="color: black;" href="{% url 'userprofile' username=post.sub_section.interest.userprofile.user.username %}">@{{ post.sub_section.interest.userprofile.user.username }}</a>
+		</div> 
+		<div class="content_title" style="display: block; max-width: 230px;  position: relative; left: 0; min-height: 25%; margin-top: 3px; margin-bottom: 0px; font-size: 14px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; cursor: pointer;">
+			<a href="#post{{ forloop.counter }}" data-toggle="modal" style="color: black; text-decoration: none; outline: none;">{{ post.post_title }}</a>
+		</div>
+	</div>
+	
+	<div style="display: inline-block; float: right; padding-top: 5px; padding-right: 10px; font-size: 12px;">
+		
+		<img src="{% static 'vibe/media/image/icons/relatedpost.png' %}" style="width: 14px; height: 14px; margin-right: 4px; margin-left: 6px;"> 0
+		<img src="{% static 'vibe/media/image/icons/link.png' %}" style="width: 14px; height: 14px; margin-right: 6px; margin-left: 4px;">{{ post|link_lookup:'post' }}  
+		<img src="{% static 'vibe/media/image/icons/re-route.png' %}" style="width: 14px; height: 14px; margin-right: 8px; margin-left: 6px;">{{ post.num_reroute }}
+		<img src="{% static 'vibe/media/image/icons/save.png' %}" style="width: 14px; height: 14px; margin-right: 6px; margin-left: 4px;">{{ post.num_saved }}
+	</div> 
+	<div style="display: inline-block; position: absolute; right: 3%; margin-top: 6.8%; font-size: 12px;">
+			{{ post.sub_section }}
+	</div>
+	<!-- <div class="content" style="display: none;">
+		{% if post.post_image %}
+		<div style="position: relative; display: inline-block; top: -0px; left: 5px; height: 220px; width: 97%; margin-bottom: 3px;">
+			<img src="{{ post.post_image.url }}" style="width: 100%; height: 100%; border-radius: 5px;">
+		</div>
+		<div style="display: inline-block; width: 97%; left: 9px; position: relative; font-size: 12px; margin-top: 4px; margin-bottom: 4px;">
+				{{ post.post_content }}
+		</div>
+		{% elif post.post_video %}
+			<div class="youtube-player" data-id="{{ post.post_video }}" style="margin-top: 0;"></div>
+			<div style="display: inline-block; position: relative; margin-left: 5px; font-size: 12px; top: -2px; margin-bottom: 4px; width: 97%; padding-top: 5px;">{{ post.post_content }}</div>
+		{% elif post.post_file %}
+			<div style="display: inline-block; width: 97%; left: 9px; position: relative; font-size: 12px; margin-top: 4px; margin-bottom: 4px;">
+				<object width="100%" height="450px" data="{{ post.post_file.url }}"></object>
+		</div>
+		{% else %}
+			<div style="display: inline-block; width: 97%; left: 9px; position: relative; font-size: 12px; margin-top: 0px; margin-bottom: 4px;">
+				{{ post.post_content }}
+			</div>
+		{% endif %}
+	</div> -->
+</div>
+
+<div class="modal fade" id="post{{ forloop.counter }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+		<div class="modal-dialog" role="document" style="background-color: white; top: 10px; border-radius: 10px;">
+			<div class="modal-header">
+				<img src="{{ post.sub_section.interest.userprofile.image.url }}" style="width: 60px; height: 60px; border-radius: 100%; margin-right: 8px; margin-left: 1px; top: 9px; position: absolute;">  
+				<div style="height: 100%; display: inline-block; position: relative; left: 15%;">
+					<div style="font-size: 11px; position: relative; display: inline-block; height: 10%;width: 50%; top: -3px;">
+						<a style="color: black;" href="{% url 'userprofile' username=post.sub_section.interest.userprofile.user.username %}">@{{ post.sub_section.interest.userprofile.user.username }}</a>
+					</div> 
+					<div class="content_title" style="display: block; max-width: 340px;  position: relative; left: 0; min-height: 25%; margin-bottom: 0px; font-size: 17px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+						{{ post.post_title }}
+					</div>
+				</div>
+				
+				<div style="display: inline-block; float: right; padding-top: 0px; padding-right: 10px; font-size: 12px; top: -2px; position: relative;">
+					
+					<img src="{% static 'vibe/media/image/icons/relatedpost.png' %}" style="width: 14px; height: 14px; margin-right: 4px; margin-left: 6px;"> 0
+					<img src="{% static 'vibe/media/image/icons/link.png' %}" style="width: 14px; height: 14px; margin-right: 6px; margin-left: 4px;">{{ post|link_lookup:'post' }}  
+					<img src="{% static 'vibe/media/image/icons/re-route.png' %}" style="width: 14px; height: 14px; margin-right: 8px; margin-left: 6px;">{{ post.num_reroute }}
+					<img src="{% static 'vibe/media/image/icons/save.png' %}" style="width: 14px; height: 14px; margin-right: 6px; margin-left: 4px;">{{ post.num_saved }}
+				</div> 
+				<div style="display: inline-block; position: absolute; right: 3%; margin-top: 4%; font-size: 12px; text-transform: capitalize;">
+						{{ post.sub_section }}
+				</div>
+			</div>
+			<div class="modal-content" style="border-radius: 0 0 5px 5px; box-shadow: 0 0 0 0; border: none;">
+				<div class="modal-body" style="margin: 0; padding: 0;">
+					<div class="content">
+						{% if post.post_image %}
+						<div style="position: relative; display: inline-block; top: -0px; height: 450px; width: 100%; margin-bottom: 3px;">
+							<img src="{{ post.post_image.url }}" style="width: 100%; height: 100%;">
+						</div>
+						<div style="display: inline-block; width: 97%; position: relative; margin-top: 8px; margin-left: 11px; padding-top: 0px; margin-bottom: 12px;">
+								<span style=" font-size: 14px; ">{{ post.post_content }}</span>
+						</div>
+						{% elif post.post_video %}
+							<div class="youtube-player" data-id="{{ post.post_video }}" style="margin-top: 0; height: 430px;"></div>
+							<div style="display: inline-block; position: relative; margin-left: 5px; font-size: 12px; top: -2px; margin-bottom: 8px; width: 97%; padding-top: 5px;">{{ post.post_content }}</div>
+						{% elif post.post_file %}
+							<div style="display: inline-block; width: 97%; left: 9px; position: relative; font-size: 12px; margin-top: 4px; margin-bottom: 4px;">
+								<object style="width: 100%; height: 550px;" data="{{ post.post_file.url }}"></object>
+						</div>
+						{% else %}
+							<div style="display: inline-block; width: 97%; position: relative; font-size: 16px; margin-top: 4px; margin-bottom: 4px; margin-left: 11px; margin-bottom: 8px;">
+								{{ post.post_content }}
+							</div>
+						{% endif %}
+					</div>
+				</div>  			
+		</div>
+		</div>
+</div>
+{% endfor %}

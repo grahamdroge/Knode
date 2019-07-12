@@ -18,93 +18,42 @@
 
 	<div class="wrapper" id="{{ user.username }}">
 	<body>
-		<div class="navbar navbar-inverse navbar-fixed-top" role="navigation" style="height: 53px;">
-				<div class="navbar-header">
-					<div class="navbar-brand" style="font-family: 'Baloo Thambi', sans-serif; font-size: 38px; cursor: pointer;">        KN <img src="{% static 'knode_site/media/image/icons/knode.png' %}" class="knode-logo" style="display: inline; width: 38px; height: 38px; border: solid; border-width: 2px; padding: 2px; border-radius: 100%; top: -3px; position: relative;"> DE</div>
-
-
-					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-						<span class="sr-only">Toggle Navigation</span>
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-					</button>
-					
-					<ul class="navbar navbar-nav navbar-left">
-
-						<li>
-							<form method="POST" id="search" role="search" class="navbar-form navbar-left">
-							{% csrf_token %}
-							<div class="form-group">
-								<input name="search-user" id="autocomplete-search" class="form-control" placeholder="Search...  ">
-								<button type="submit" class="btn btn-default" id="search-button"><span class="glyphicon glyphicon-search"></span></button>
-								<div id="search-user">
-								
-								</div>
-							</div>	
-							</form>	
-						</li>
-
-						<li class="dropdown">
-							<div class="dropdown" style="margin-top: 7px;">
-
-					    		<ul class="dropdown-menu">
-					    		
-						              <li class="dropdown-submenu" style="text-align: center;">
-						              	<a href="#" class="test" style="text-decoration: none; color: black;">Section</a>
-						              		<ul class="dropdown-menu">	
-										
-						              		</ul>
-						              </li>
-						              <form method="POST">
-						              {% csrf_token %}
-						              	<li class="filter-drop-feed"><button type="submit" name="feed-filter" value="tool" class="filter-get">tool</button></li>
-						              </form>
-						              <form method="POST">
-						              {% csrf_token %}
-						              	<li class="filter-drop-feed"><button type="submit" name="feed-filter" value="post" class="filter-get">post</button></li>
-						              </form>
-						              <form method="POST">
-						              {% csrf_token %}
-						              	<li class="filter-drop-feed"><button type="submit" name="feed-filter" value="none" class="filter-get">none</button></li>
-
-						        </form>
-					            </ul>
-					        </div>
-						</li>
-
-					</ul>
-					
-				</div>
-				<div class="navbar-collapse collapse">
-					<ul class="nav navbar-nav navbar-right">
-						<li class="dropdown">
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown" style="position: relative; top: -2px;"></a>
-							<ul class="dropdown-menu">
-
-							</ul>
-						</li>
-						<li>
-							<a href="{% url 'home' %}" style="margin-bottom: 0;"></a>
-						</li>
-
-						<li>
-							<a href="#" style="margin-bottom: 0;"></a>
-						</li>
-
-						<li class="dropdown">
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown"></a>
-							<ul class="dropdown-menu">
-								<li><a href="#" class="dropdown-toggle" style="font-family: 'Comic Sans MS'; font-size: 18px;">Edit Profile</a></li>
-								<li><a href="#" class="dropdown-toggle" style="font-family: 'Comic Sans MS'; font-size: 18px;">Logout</a></li>
-							</ul>
-						</li>
-
-						
-
-					</ul>
-				</div>
-		</div>
+		
+	<nav class="navbar navbar-expand-lg navbar-light bg-light">
+			<a class="navbar-brand" href="#">Navbar</a>
+			<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+				<span class="navbar-toggler-icon"></span>
+			</button>
+			
+			<div class="collapse navbar-collapse" id="navbarSupportedContent">
+				<ul class="navbar-nav mr-auto">
+				<li class="nav-item active">
+					<a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="#">Link</a>
+				</li>
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+					Dropdown
+					</a>
+					<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+					<a class="dropdown-item" href="#">Action</a>
+					<a class="dropdown-item" href="#">Another action</a>
+					<div class="dropdown-divider"></div>
+					<a class="dropdown-item" href="#">Something else here</a>
+					</div>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link disabled" href="#">Disabled</a>
+				</li>
+				</ul>
+				<form class="form-inline my-2 my-lg-0">
+				<input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+				<button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+				</form>
+			</div>
+		</nav>
 		
 
 	<div class="user-items">

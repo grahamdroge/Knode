@@ -1,0 +1,23 @@
+{% for tool in top_tool %}{% load static %}{% load knode_extras %}
+<div class="top_instance" style="margin-top: 4px; width: 100%; height: 9%; border: solid; border-width: 1px; border-radius: 10px;box-shadow: 0px 0px 7px #000;background-color: rgb(220,220,220); overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+
+	<img src="{{ tool.sub_section.interest.userprofile.image.url }}" style="width: 40px; height: 40px; border-radius: 100%; margin-right: 8px; margin-left: 6px; margin-top: 5px; position: absolute;">  
+	<div style="height: 100%; display: inline-block; position: relative; left: 15%;">
+		<div style="font-size: 11px; position: relative; display: inline-block; height: 10%;width: 50%; margin-top: 9px;">
+			<a style="color: black;" href="{% url 'userprofile' username=tool.sub_section.interest.userprofile.user.username %}">@{{ tool.sub_section.interest.userprofile.user.username }}</a>
+		</div> 
+		<div style="display: block; max-width: 230px;  position: relative; left: 0; min-height: 50%; margin-top: 0px; margin-bottom: 2px; font-size: 14px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; ">
+			{{ tool.tool_name }}
+		</div>
+	</div>
+	<div style="display: inline-block; float: right; padding-top: 5px; padding-right: 10px; font-size: 12px;">
+		<img src="{% static 'vibe/media/image/icons/link.png' %}" style="width: 14px; height: 14px; margin-right: 6px; margin-left: 4px;">{{ tool|link_lookup:'tool' }} 
+		<img src="{% static 'vibe/media/image/icons/re-route.png' %}" style="width: 14px; height: 14px; margin-right: 6px; margin-left: 4px;">{{ tool.num_reroute }}
+		<img src="{% static 'vibe/media/image/icons/save.png' %}" style="width: 14px; height: 14px; margin-right: 6px; margin-left: 4px;">{{ tool.num_saved }}
+
+	</div>
+	<div style="display: inline-block; position: absolute; right: 3%; margin-top: 6.5%;">
+			{{ tool.sub_section }}
+	</div>
+</div>
+{% endfor %}

@@ -1,0 +1,92 @@
+{% load static %}
+<!DOCTYPE html> 
+<html>
+	<head>
+
+		<link rel="shortcut icon" href="">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.1/jquery.min.js"></script>
+		<!-- When referring to static files bootstrap.min.js it doesn work -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="{% static 'vibe/javasc/userhome.js' %}"></script>
+
+
+  		<link rel="stylesheet" type="text/css" href="{% static 'boots/css/bootstrap.min.css' %}">
+		<link rel="stylesheet" type="text/css" href="{% static 'vibe/cssfiles/post_tool.css' %}">
+
+	</head>
+
+	<div class="wrapper">
+	<body>
+		<div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+				<div class="navbar-header">
+					<a href="{% url 'home' %}" class="navbar-brand">        KN <img src="{% static 'vibe/media/image/icons/knode.png' %}" style="display: inline;"> DE</a>
+
+
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+						<span class="sr-only">Toggle Navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					
+					
+					
+				</div>
+				<div class="navbar-collapse collapse">
+					<ul class="nav navbar-nav navbar-right">
+						<li class="dropdown">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown">Settings<b class="caret"></b></a>
+							<ul class="dropdown-menu">
+								<li><a href="{% url 'edit' %}" class="dropdown-toggle" data-toggle="dropdown">Edit Profile</a></li>
+								<li><a href="{% url 'logout' %}" class="dropdown-toggle" data-toggle="dropdown">Logout</a></li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+		</div>
+	</body>
+
+	<div class="tools">
+		<div class="tool-header">
+			<div class="heading">Tools</div>
+		</div>
+		{% for tool in subtopic_tools %}
+			<div class="tool">
+				<a href="{{ tool.tool_link }}">{{ tool.tool_name }}</a>
+			</div>
+		{% endfor %}
+	</div>
+
+	<div class="topics">
+		<div class="post-header">
+			<div class="heading">Posts</div>
+		</div>
+		{% for post in subtopic_posts %}
+			<div class="post">
+				<h1><button style="background: none;" data-toggle="modal" data-target="#post-{{ forloop.counter }}">{{ post.post_title }}</button></h1>
+			</div>
+
+			<div class="modal fade" id="post-{{ forloop.counter }}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+	  		<div class="modal-dialog" role="document">
+	   			<div class="modal-content">
+	   				<div class="modal-header">
+	   					<h1>{{ post.post_title }}</h1>
+	   				</div>
+	      			<div class="modal-body">
+	      				{% if post.post_image %}
+	      					<img src="{{ post.post_image.url }}" style="width: 80px; height: 80px;"> 
+	      				{% endif %}
+	      				{{ post.post_content }}
+	      				
+	      			</div>  			
+	    		</div>
+	  		</div>
+		</div>
+		{% endfor %}
+	</div>
+
+	</div>
+
+
+
+

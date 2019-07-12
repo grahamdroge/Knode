@@ -1,0 +1,126 @@
+{% load static %}{% load knode_extras %}
+
+<script type="text/javascript">
+	$('document').ready(function(){
+	$('#save_img').click(function(){
+		$('.saved_instances').toggle();
+		$('.main_profile').toggle();
+		});
+	});
+</script>
+
+
+<div style="width: 98%; height: 6%; border-bottom: solid; border-width: 1px; margin-left: 5px; margin-top: 5px; padding-left: 5px;">
+	<div style="font-size: 22px; text-transform: capitalize; display: inline-block;font-family: 'Baloo Thambi', sans-serif;">
+		{{ profile.first_name }} {{ profile.last_name }}
+	</div>
+	<div id='username' style="display: inline-block; font-size: 12px; margin-left: 8px;font-family: 'Baloo Thambi', sans-serif;">
+		@{{ profile.username }}
+	</div>
+	<div style="float: right;">
+		<img id="save_img" src="{% static 'vibe/media/image/icons/save.png' %}" style="width: 28px; height: 28px; margin-right: 15px; margin-top: 2px;">
+		<img src="{% static 'vibe/media/image/icons/dm.png' %}" style="width: 28px; height: 28px; margin-right: 15px; margin-top: 2px;">
+		<img src="{% static 'vibe/media/image/icons/followers.png' %}" style="margin-right: 10px; width: 26px; height: 26px; margin-top: 2px;">
+		<img src="{% static 'vibe/media/image/icons/following.png' %}" style="width: 26px; height: 26px; margin-right: 5px; margin-top: 2px;">
+	</div>
+</div>
+
+<div class="saved_instances" style="display: none;">
+	{% for instance in saved %}
+		{% if instance.post %}
+			<div style="width: 97%; margin-top: 6px; margin-left: 6px; padding-left: 5px; padding-right: 5px; min-height: 8%;font-family: 'Baloo Thambi', sans-serif; font-size: 20px; border-bottom: solid; border-width: 1px; text-transform: capitalize; padding-top: 7px;">
+				<div style="width: 70%; font-size: 20px; display: inline-block;">
+					{{ instance.post.post_title }} -- {{ instance.post.sub_section }}
+				</div>
+				
+				<div style="width: 28%; height: 40px; float: right; display: inline-block; position: relative; margin-top: 0; font-size: 14px;">
+					<img src="{% static 'vibe/media/image/icons/subpost.png' %}" style="width: 16px; height: 16px; margin-left: 10px;"><span style="margin-left: 7px;">0</span>
+					<img src="{% static 'vibe/media/image/icons/link.png' %}" style="width: 16px; height: 16px; margin-left: 6px;"><span style="margin-left: 7px;">{{ instance.post|link_lookup:'post' }}</span>
+					<img src="{% static 'vibe/media/image/icons/save.png' %}" style="width: 16px; height: 16px; margin-left: 6px;"><span style="margin-left: 7px;">{{ instance.post.num_saved }}</span>
+				</div>
+				{% if instance.post.post_video %}
+					<div class="youtube-player" data-id="{{ post.post_video }}">
+					</div>
+				{% elif instance.post.post_image %}
+					<div style="">
+
+						<img src="{{ instance.post.post_image.url }}" style="width: 100%; height: 250px; margin-bottom: 10px;">
+
+					</div>
+				{% endif %}
+				<div style="font-size: 14px; margin-bottom: 10px; font-family: Arial; margin-top: 8px;">
+					{{ instance.post.post_content }}
+				</div>
+			
+			</div>
+		{% else %}
+			<div style="width: 97%; margin-top: 6px; margin-left: 6px; padding-left: 5px; padding-right: 5px; min-height: 8%;font-family: 'Baloo Thambi', sans-serif; font-size: 20px; border-bottom: solid; border-width: 1px; text-transform: capitalize; padding-top: 7px;">
+			<div style="width: 75%; font-size: 20px; display: inline-block;">
+				{{ instance.tool.tool_name }}
+			</div>
+			<div style="width: 23%; height: 40px; float: right; display: inline-block; position: relative; margin-top: 0; font-size: 14px;">
+				<img src="{% static 'vibe/media/image/icons/link.png' %}" style="width: 16px; height: 16px; margin-left: 20px;"><span style="margin-left: 7px;">{{ instance.tool|link_lookup:'tool' }}</span>
+				<img src="{% static 'vibe/media/image/icons/save.png' %}" style="width: 16px; height: 16px; margin-left: 6px;"><span style="margin-left: 7px;">{{ instance.tool.num_saved }}</span>
+			</div>
+		</div>
+		{% endif %}
+	{% endfor %}
+</div>
+
+
+
+<div class="main_profile">
+	<div style="width: 97%; margin-top: 6px; margin-left: 6px; padding-left: 5px; padding-right: 5px; height: 275px; font-family: 'Baloo Thambi', sans-serif;">
+		{{ profile.userprofile.bio }}
+	</div>
+	<div class="groups" style="width: 100%; height: 7%; margin-top: 20px;">
+		<div style="width: 97%; border-bottom: solid; border-width: 2px; margin-left: 1.5%; font-size: 24px; font-family: 'Baloo Thambi', sans-serif; height: 100%; padding-top: 3px;">
+			Groups
+		</div>
+	</div>
+	<div class="top-posts" style="width: 97%; height: 225px; margin-top: 6px; margin-left: 1.5%; font-size: 24px; font-family: 'Baloo Thambi', sans-serif; position: relative;">
+		Top
+		<div style="width: 97%;  margin-left: 0%; font-size: 24px; font-family: 'Baloo Thambi', sans-serif; height: 100%;">
+
+				<div style="width: 49%; height: 98%; font-size: 18px; font-family: 'Baloo Thambi', sans-serif; text-align: center; display: inline-block; margin-top: 0; position: relative; top: 2px;">
+					<div style="width: 100%; border-bottom: solid; border-width: 2px; margin-bottom: 3px;">Post</div>
+					{% for post in top_post %}
+					<div style="width: 100%; display: inline-block; font-size: 13px; text-transform: capitalize; margin-bottom: 6px; margin-top: 3px;">
+						<div style="position: relative; float: left; padding-left: 4px; font-size: 13px; width: 68%; text-align: left; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+							{{ post.0 }}
+						</div>
+						<div style="position: relative; float: right; font-size: 10px;">
+							  <!-- <img src="{% static 'vibe/media/image/icons/re-route.png' %}" style="width: 13px; height: 13px; margin-left: 3px; margin-right: 3px;"> {{ post.1 }} <img src="{% static 'vibe/media/image/icons/save.png' %}" style="width: 13px; height: 13px; margin-left: 3px; margin-right: 3px;"> -->
+							{% with 'vibe/media/image/icons/'|add:post.0.sub_section.interest.section|add:'-icon.png' as route %}
+							 <img src="{% static route %}" style="width: 17px; height: 17px; margin-left: 3px; margin-right: 3px;">
+							 {% endwith %}
+						</div>
+					</div>
+					{% endfor %}
+				</div>
+				<div style="width: 49%; height: 98%; font-size: 18px; font-family: 'Baloo Thambi', sans-serif; text-align: center; display: inline-block; position: absolute; top: 36px;">
+					<div style="width: 100%; border-bottom: solid; border-width: 2px; margin-bottom: 3px;">Gear</div>
+					{% for tool in top_gear %}
+					<div style="width: 100%; display: inline-block; text-transform: capitalize; margin-bottom: 6px; margin-top: 3px;">
+						<div style="position: relative; float: left; padding-left: 8px; font-size: 13px; width: 68%; text-align: left; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">
+							{{ tool.0 }}
+						</div>
+						<div style="position: relative; float: right; font-size: 10px;">
+							 <!-- <img src="{% static 'vibe/media/image/icons/re-route.png' %}" style="width: 13px; height: 13px; margin-left: 3px; margin-right: 3px;"> {{ tool.1 }} <img src="{% static 'vibe/media/image/icons/save.png' %}" style="width: 13px; height: 13px; margin-left: 3px; margin-right: 3px;"> -->
+							 {% with 'vibe/media/image/icons/'|add:tool.0.sub_section.interest.section|add:'-icon.png' as route %}
+							<img src="{% static route %}" style="width: 17px; height: 17px; margin-left: 3px; margin-right: 3px;">
+							{% endwith %}
+						</div>
+					</div>
+					{% endfor %}
+				</div>
+
+			
+		</div>
+	</div>
+	<!-- <div class="focus" style="width: 100%; height: 30%; margin-top: 0px; margin-bottom: 15px;">
+		<div style="width: 97%; border-bottom: solid; border-width: 2px; margin-left: 1.5%; font-size: 24px; font-family: 'Baloo Thambi', sans-serif; height: 100%;">
+			Focus
+		</div>
+	</div> -->
+</div>

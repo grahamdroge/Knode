@@ -1,0 +1,112 @@
+body {
+	background-color: rgb(74,86,224);
+	min-width: 500px;
+}
+
+button:focus {
+	outline: 0;
+}
+
+.wrapper {
+	margin-left: auto;
+	margin-right: auto;
+	width: 960px;
+}
+
+.tool a {
+	margin-left: 5%;
+	font-size: 18px;
+	color: white;
+}
+
+.add-btn {
+	display: inline;
+	float: right;
+	margin-right: 3px;
+}
+
+.navbar-brand {
+	position: absolute;
+	width: 100%;
+	left: 0;
+	text-align: center;
+	font-size: 32px;
+	margin: 0 auto;
+	padding-top: 12px;
+}
+
+.heading {
+	font-size: 28px;
+}
+
+.navbar-brand {
+	position: absolute;
+	width: 100%;
+	left: 0;
+	text-align: center;
+	margin: 0 auto;
+}
+
+.tools {
+	border: solid;
+	width: 50%;
+	height: 100%;
+	float: left;
+	position: absolute;
+	left: 0%;
+	margin-top: 50px;
+	background-color: gray;
+	overflow: scroll;
+}
+
+.tool {
+	border: solid;
+	text-transform: capitalize;
+	padding-top: 30px;
+	padding-bottom: 30px;
+	background-color: black;
+
+}
+
+.post {
+	border: solid;
+	text-transform: capitalize;
+	padding-top: 30px;
+	padding-bottom: 30px;
+	background-color: black;
+}
+
+.post h1 {
+	color: white;
+	margin-left: 5%;
+}
+
+.tool-header {
+	border: solid;
+	text-transform: capitalize;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	background-color: white;
+	text-align: center;
+}
+
+.post-header {
+	border: solid;
+	text-transform: capitalize;
+	padding-top: 10px;
+	padding-bottom: 10px;
+	background-color: white;
+	text-align: center;
+}
+
+.topics {
+	border: solid;
+	width: 50%;
+	height: 100%;
+	float: right;
+	position: absolute;
+	right: 0%;
+	margin-top: 50px;
+	background-color: gray;
+	overflow: scroll;
+}

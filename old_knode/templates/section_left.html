@@ -1,0 +1,109 @@
+{% load static %}{% load knode_extras %}
+<!DOCTYPE html> 
+<html>
+<head>
+	<script type="text/javascript">
+		$('document').ready(function(){
+			$('#gear').click(function(){
+				$('.post_instances').hide();
+				$('.gear_instances').show();
+			});
+			$('#post').click(function(){
+				$('.gear_instances').hide();
+				$('.post_instances').show();
+			});
+		});
+	</script>
+	<script type="text/javascript">
+		$('document').ready(
+		    function() {
+		        var div, n,
+		            v = document.getElementsByClassName("youtube-player");
+		        for (n = 0; n < v.length; n++) {
+		            div = document.createElement("div");
+		            div.setAttribute("data-id", v[n].dataset.id);
+		            div.innerHTML = labnolThumb(v[n].dataset.id);
+		            div.onclick = labnolIframe;
+		            v[n].appendChild(div);
+		        }
+		    });
+
+		function labnolThumb(id) {
+		    var thumb = '<img src="https://i.ytimg.com/vi/ID/hqdefault.jpg">',
+		        play = '<div class="play"></div>';
+		    return thumb.replace("ID", id) + play;
+		}
+
+		function labnolIframe() {
+		    var iframe = document.createElement("iframe");
+		    var embed = "https://www.youtube.com/embed/ID?autoplay=1";
+		    iframe.setAttribute("src", embed.replace("ID", this.dataset.id));
+		    iframe.setAttribute("frameborder", "0");
+		    iframe.setAttribute("allowfullscreen", "1");
+		    this.parentNode.replaceChild(iframe, this);
+		}
+	</script>
+</head>
+
+
+
+<div style="width: 98%; height: 6%; border-bottom: solid; border-width: 1px; margin-left: 5px; margin-top: 5px; padding-left: 5px;">
+	<div style="font-size: 26px; text-transform: capitalize; display: inline-block;font-family: 'Baloo Thambi', cursive;">
+			{{ subsection.title }}
+	</div>
+
+	<div style="float: right;">
+		<img id="post" src="{% static 'vibe/media/image/icons/post-outline.png' %}" style="width: 25px; height: 25px; margin-right: 15px; margin-top: 3px;">
+		<img id="gear" src="{% static 'vibe/media/image/icons/tool-outline.png' %}" style="width: 25px; height: 25px; margin-right: 15px; margin-top: 3px;">
+	</div>
+</div>
+<div class="post_instances" style="height: 93%; width: 99%; margin-top: 4px; margin-left: 2px;">
+	{% for post in posts %}
+		<div style="width: 97%; margin-top: 6px; margin-left: 6px; padding-left: 5px; padding-right: 5px; min-height: 8%;font-family: 'Baloo Thambi', cursive; font-size: 20px; border-bottom: solid; border-width: 1px; text-transform: capitalize; padding-top: 7px;">
+			<div style="width: 61%; font-size: 16px; display: inline-block;">
+				{{ post.post_title }}
+			</div>
+			
+			<div style="position: relative; width: 37%; height: 27px; float: right; display: inline-block; position: relative; margin-top: 0; font-size: 14px; margin-bottom: 4px; left: 17px;">
+				<img src="{% static 'vibe/media/image/icons/re-route.png' %}" style="width: 13px; height: 13px; margin-left: 7px;"><span style="margin-left: 7px; font-size: 12px;">{{ post.num_reroute }}</span>
+				<img src="{% static 'vibe/media/image/icons/subpost.png' %}" style="width: 13px; height: 13px; margin-left: 7px;"><span style="margin-left: 7px; font-size: 12px;">0</span>
+				<img src="{% static 'vibe/media/image/icons/link.png' %}" style="width: 13px; height: 13px; margin-left: 6px;"><span style="margin-left: 7px; font-size: 12px;">{{ post|link_lookup:'post' }}</span>
+				<img src="{% static 'vibe/media/image/icons/save.png' %}" style="width: 13px; height: 13px; margin-left: 6px;"><span style="margin-left: 7px; font-size: 12px;">{{ post.num_saved }}</span>
+			</div>
+			{% if post.post_video %}
+				<div class="youtube-player" data-id="{{ post.post_video }}" style="margin-top: 5px;">
+				</div>
+			{% elif post.post_image %}
+				<div style="">
+
+					<img src="{{ post.post_image.url }}" style="width: 100%; height: 250px; margin-bottom: 10px;">
+
+				</div>
+			{% elif post.post_file %}
+				<div style="">
+
+					<object width="100%" height="500px" data="{{ post.post_file.url }}"></object>
+
+				</div>
+			{% endif %}
+			<div style="font-size: 12px; margin-bottom: 10px; font-family: Arial; margin-top: 8px;">
+				{{ post.post_content }}
+			</div>
+			
+		</div>	
+	{% endfor %}
+</div>
+<div class="gear_instances" style="height: 100%; width: 97%; display: none; margin-top: 4px; margin-left: 2px;">
+	{% for tool in tools %}
+		<div style="width: 97%; margin-top: 6px; margin-left: 6px; padding-left: 5px; padding-right: 5px; min-height: 8%;font-family: 'Baloo Thambi', cursive; font-size: 20px; border-bottom: solid; border-width: 1px; text-transform: capitalize; padding-top: 7px;">
+			<div style="width: 75%; font-size: 20px; display: inline-block;">
+				{{ tool.tool_name }}
+			</div>
+			<div style="width: 23%; height: 40px; float: right; display: inline-block; position: relative; margin-top: 0; font-size: 14px;">
+				<img src="{% static 'vibe/media/image/icons/link.png' %}" style="width: 16px; height: 16px; margin-left: 20px;"><span style="margin-left: 7px;">{{ tool|link_lookup:'tool' }}</span>
+				<img src="{% static 'vibe/media/image/icons/save.png' %}" style="width: 16px; height: 16px; margin-left: 6px;"><span style="margin-left: 7px;">{{ tool.num_saved }}</span>
+			</div>
+		</div>
+	{% endfor %}
+</div>
+</html>
